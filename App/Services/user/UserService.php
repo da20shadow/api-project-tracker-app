@@ -19,9 +19,78 @@ class UserService implements UserServiceInterface
         $this->encryptionService = new EncryptionService();
     }
 
-    public function create($userInputs)
+    public function register($userInputs)
     {
-        // TODO: Implement create() method.
+        if (!isset($userInputs['username']) || !isset($userInputs['email'])
+            || !isset($userInputs['password']) || !isset($userInputs['re_password']))
+        {
+            http_response_code(403);
+            echo json_encode([
+                'message' =>'All fields are required!'
+            ]);
+            return;
+        }
+
+        if ($userInputs['password'] != $userInputs['re_password'])
+        {
+            http_response_code(403);
+            echo json_encode([
+                'message' =>'Password and re-password does not match!!'
+            ]);
+            return;
+        }
+
+        $username = $userInputs['username'];
+        $email = $userInputs['email'];
+        $password = $userInputs['password'];
+
+        $userFromDb = $this->userRepository->getUserByUsername($username);
+        if ($userFromDb instanceof UserDTO)
+        {
+            http_response_code(403);
+            echo json_encode([
+                'message' =>'This username already registered!'
+            ]);
+            return;
+        }
+
+        $userFromDb = $this->userRepository->getUserByEmail($email);
+        if ($userFromDb instanceof UserDTO)
+        {
+            http_response_code(403);
+            echo json_encode([
+                'message' =>'This email already registered!'
+            ]);
+            return;
+        }
+
+        $user = new UserDTO();
+        try {
+            $user->setUsername($username);
+            $user->setEmail($email);
+            $user->setPassword($password);
+
+        }catch (Exception $exception){
+            http_response_code(403);
+            echo json_encode([
+                'message' => $exception->getMessage()
+            ]);
+            return;
+        }
+
+        $result = $this->userRepository->insert($user);
+
+        if (!$result){
+            http_response_code(403);
+            echo json_encode([
+                'message' =>'An Error Occur, try again latter!'
+            ]);
+        }
+        http_response_code(201);
+        echo json_encode([
+            'message' =>'Successfully Registered!'
+        ]);
+
     }
 
     public function login($userInputs)
