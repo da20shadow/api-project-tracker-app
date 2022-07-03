@@ -14,6 +14,11 @@ class UserRepository implements UserRepositoryInterface
         // TODO: Implement insert() method.
     }
 
+    public function login(UserDTO $userDTO)
+    {
+        // TODO: Implement insert() method.
+    }
+
     public function update(UserDTO $userDTO)
     {
         // TODO: Implement update() method.
