@@ -1,4 +1,7 @@
 <?php
+
+use App\Services\user\UserService;
+
 spl_autoload_register();
 header('Content-Type: application/json');
 
@@ -30,26 +33,26 @@ $apiHandler = new ApiHandler();
 // api url -> /user/
 if (preg_match("/^\/user[\/]?$/", $url))
 {
-    $userService = 1;
+    $userService = new UserService();
     /** LOGIN / REGISTER */
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $inputData)
     {
-        $apiHandler->processUserPOSTRequest($inputData);
+        $apiHandler->processUserPOSTRequest($inputData,$userService);
     }
     /** UPDATE user */
     elseif ($_SERVER['REQUEST_METHOD'] === 'PATCH' && $inputData)
     {
-        $apiHandler->processUserPATCHRequest($inputData);
+        $apiHandler->processUserPATCHRequest($inputData,$userService);
     }
     /** GET user */
     elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $inputData)
     {
-        $apiHandler->processUserGETRequest($inputData);
+        $apiHandler->processUserGETRequest($inputData,$userService);
     }
     /** DELETE User */
     elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && $inputData)
     {
-        $apiHandler->processUserDELETERequest($inputData);
+        $apiHandler->processUserDELETERequest($inputData,$userService);
     }
 }
 
