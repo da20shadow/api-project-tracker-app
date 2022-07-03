@@ -1,5 +1,6 @@
 <?php
-spl_autoload_register();
+//TODO: CHANGE the ROOT Path before upload ot hosting
+require_once ($_SERVER['DOCUMENT_ROOT'].'/api-goals-app/vendor/autoload.php');
 
 use App\Models\user\UserDTO;
 use Firebase\JWT\JWT;
@@ -7,9 +8,12 @@ use Firebase\JWT\Key;
 
 class AuthValidator
 {
-    private string $key = "sl45df345jj45sd32rfn#$%TaeSDF34T%W#FSfsdgsdfgaSDF#$%@$#%$%^$#sfasfdfasdf";
+    private static string $key = "sl45df345jj45sd32rfn#$%TaeSDF34T%W#FSfsdgsdfgaSDF#$%@$#%$%^$#sfasfdfasdf";
 
-    public function createToken(UserDTO $userDTO): array
+    /**
+     * @throws Exception
+     */
+    public static function createToken(UserDTO $userDTO): array
     {
         $iat = time();
         $exp = $iat + 60 * 60; // Expiration 1 hour
@@ -23,21 +27,20 @@ class AuthValidator
             'email' => $userDTO->getEmail(),
             'role' => $userDTO->getRole(),
         ];
-        $jwt = JWT::encode($payload,$this->key,'HS256');
+        $jwt = JWT::encode($payload,self::$key,'HS256');
 
         return [
+            'id' => $userDTO->getId(),
+            'email' => $userDTO->getEmail(),
+            'username' => $userDTO->getUsername(),
             'token' => $jwt,
             'expires' => $exp,
-            'id' => $userDTO->getId(),
-            'username' => $userDTO->getUsername(),
-            'email' => $userDTO->getEmail(),
-            'role' => $userDTO->getRole()
         ];
     }
 
     private function decode($token): stdClass
     {
-        return JWT::decode($token,new Key($this->key,'HS256'));
+        return JWT::decode($token,new Key(self::$key,'HS256'));
     }
 
     public function verifyToken($token)
