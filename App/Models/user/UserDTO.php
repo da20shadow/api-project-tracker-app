@@ -2,6 +2,7 @@
 
 namespace App\Models\user;
 
+use App\Services\encryption\EncryptionService;
 use Exception;
 
 class UserDTO
@@ -156,6 +157,8 @@ class UserDTO
         if (strlen($password) < 8 || strlen($password) > 245){
             throw new Exception('Password must be between 8 and 45 characters!');
         }
+
+        $password = EncryptionService::hash($password);
 
         $this->password = $password;
         return $this;
