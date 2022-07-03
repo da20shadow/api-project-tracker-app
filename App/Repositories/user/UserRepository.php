@@ -5,7 +5,6 @@ namespace App\Repositories\user;
 use App\Models\user\UserDTO;
 use Database\DBConnector;
 use Database\PDODatabase;
-use Exception;
 use PDOException;
 
 class UserRepository implements UserRepositoryInterface
@@ -18,9 +17,24 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /** ------------------ CREATE ------------------- */
-    public function insert(UserDTO $userDTO)
+    public function insert(UserDTO $userDTO): bool
     {
-        // TODO: Implement insert() method.
+        try {
+            $this->db->query("
+                INSERT INTO users
+                (username,email,password)
+                VALUES (:username,:email,:password)
+            ")->execute(array(
+                ':username' => $userDTO->getUsername(),
+                ':email' => $userDTO->getEmail(),
+                ':password' => $userDTO->getPassword(),
+            ));
+            return true;
+        } catch (PDOException $exception) {
+            //TODO log the error
+            $err = $exception->getMessage();
+            return false;
+        }
     }
 
     /** ------------------UPDATE ------------------- */
