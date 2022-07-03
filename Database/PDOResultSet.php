@@ -11,16 +11,16 @@ class PDOResultSet implements PDOResultSetInterface
     private PDOStatement  $PDOStatement;
 
     /**
-     * @param PDOStatement $PDOResultSet
+     * @param PDOStatement $PDOStatement
      */
-    public function __construct(PDOStatement $PDOResultSet)
+    public function __construct(PDOStatement $PDOStatement)
     {
-        $this->PDOStatement = $PDOResultSet;
+        $this->PDOStatement = $PDOStatement;
     }
 
     public function fetch($className): Generator
     {
-        while ($row = $this->PDOStatement->fetch($className))
+        while ($row = $this->PDOStatement->fetchObject($className))
         {
             yield $row;
         }
