@@ -36,14 +36,17 @@ if (preg_match("/^\/user[\/]?$/", $url))
     {
         $apiHandler->processUserPOSTRequest($inputData);
     }
+    /** UPDATE user */
     elseif ($_SERVER['REQUEST_METHOD'] === 'PATCH' && $inputData)
     {
         $apiHandler->processUserPATCHRequest($inputData);
     }
+    /** GET user */
     elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $inputData)
     {
         $apiHandler->processUserGETRequest($inputData);
     }
+    /** DELETE User */
     elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && $inputData)
     {
         $apiHandler->processUserDELETERequest($inputData);
