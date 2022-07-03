@@ -87,7 +87,7 @@ class UserDTO
 
 
 
-    public function setId(int $id): static
+    public function setId(int $id): UserDTO
     {
         $this->id = $id;
         return $this;
@@ -96,7 +96,7 @@ class UserDTO
     /**
      * @throws Exception
      */
-    public function setUsername($username): static
+    public function setUsername($username): UserDTO
     {
 
         if (!isset($username)){
@@ -120,7 +120,7 @@ class UserDTO
     /**
      * @throws Exception
      */
-    public function setEmail(string $email): static
+    public function setEmail(string $email): UserDTO
     {
 
         if (!isset($email)){
@@ -144,7 +144,7 @@ class UserDTO
     /**
      * @throws Exception
      */
-    public function setPassword(string $password): static
+    public function setPassword(string $password): UserDTO
     {
 
         if (!isset($password)){
@@ -164,7 +164,7 @@ class UserDTO
     /**
      * @throws Exception
      */
-    public function setFirstName(string $firstName): static
+    public function setFirstName(string $firstName): UserDTO
     {
 
         if (!isset($firstName)){
@@ -184,7 +184,7 @@ class UserDTO
     /**
      * @throws Exception
      */
-    public function setLastName(string $lastName): static
+    public function setLastName(string $lastName): UserDTO
     {
         if (!isset($lastName)){
             $lastName = 'Lastname';
@@ -203,7 +203,7 @@ class UserDTO
     /**
      * @throws Exception
      */
-    public function setRole(int $role): static
+    public function setRole(int $role): UserDTO
     {
         if (!isset($role)){
             $role = 3;

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\user\UserDTO;
 use App\Services\user\UserService;
 
 spl_autoload_register();
