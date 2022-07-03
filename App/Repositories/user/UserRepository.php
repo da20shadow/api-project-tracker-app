@@ -5,6 +5,7 @@ namespace App\Repositories\user;
 use App\Models\user\UserDTO;
 use Database\DBConnector;
 use Database\PDODatabase;
+use Exception;
 use PDOException;
 
 class UserRepository implements UserRepositoryInterface
@@ -28,11 +29,9 @@ class UserRepository implements UserRepositoryInterface
         // TODO: Implement update() method.
     }
 
-    /** ------------------ GET ------------------ */
-    public function login(UserDTO $userDTO)
+    public function login(UserDTO $userDTO): ?UserDTO
     {
-        try {
-            return $this->db->query("
+        return $this->db->query("
                 SELECT id,
                        username,
                        email,
@@ -43,13 +42,10 @@ class UserRepository implements UserRepositoryInterface
                 FROM users
                 WHERE username = :username AND password = :password
             ")->execute(array(
-                ':username' => $userDTO->getUsername(),
-                ':password' => $userDTO->getPassword()
-            ))->fetch(UserDTO::class)
-                ->current();
-        }catch (PDOException $e){
-            return 'Error! ' . $e->getMessage();
-        }
+            ':username' => $userDTO->getUsername(),
+            ':password' => $userDTO->getPassword()
+        ))->fetch(UserDTO::class)
+            ->current();
     }
 
     public function getUserById($user_id)
@@ -69,7 +65,7 @@ class UserRepository implements UserRepositoryInterface
                 ":user_id" => $user_id
             ))->fetch(UserDTO::class)
                 ->current();
-        }catch (PDOException $e){
+        } catch (PDOException $e) {
             return 'Error! ' . $e->getMessage();
         }
     }
@@ -91,7 +87,7 @@ class UserRepository implements UserRepositoryInterface
                 ":username" => $username
             ))->fetch(UserDTO::class)
                 ->current();
-        }catch (PDOException $e){
+        } catch (PDOException $e) {
             return 'Error! ' . $e->getMessage();
         }
     }
@@ -113,7 +109,7 @@ class UserRepository implements UserRepositoryInterface
                 ":email" => $email
             ))->fetch(UserDTO::class)
                 ->current();
-        }catch (PDOException $e){
+        } catch (PDOException $e) {
             return 'Error! ' . $e->getMessage();
         }
     }
