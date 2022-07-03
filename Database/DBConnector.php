@@ -11,6 +11,6 @@ class DBConnector
         $pdo = new PDO($dbInfo['dsn'],$dbInfo['user'],$dbInfo['pass']);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        return new PDODatabaseInterface($pdo);
+        return new PDODatabase($pdo);
     }
 }
