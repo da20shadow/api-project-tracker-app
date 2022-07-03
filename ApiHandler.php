@@ -1,4 +1,8 @@
 <?php
+
+use App\Models\user\UserDTO;
+use App\Services\user\UserService;
+
 spl_autoload_register();
 
 class ApiHandler
@@ -6,18 +10,21 @@ class ApiHandler
     /** ---------------- USER Requests --------------- */
 
     /** --> USER POST <-- */
-    public function processUserPOSTRequest($userInputs)
+    public function processUserPOSTRequest($userInputs, UserService $userService)
     {
-        //TODO Login Register
-        http_response_code(200);
-        echo json_encode([
-            'message' =>'Login/Register Not Done Yet!',
-            'Your Input' => $userInputs
-        ]);
+        /** LOGIN User */
+        if (count($userInputs) == 2)
+        {
+            $userService->login($userInputs);
+        }
+        /** CREATE User */
+        else {
+            $userService->create($userInputs);
+        }
     }
 
     /** --> USER PATCH <-- */
-    public function processUserPATCHRequest($userInputs)
+    public function processUserPATCHRequest($userInputs,UserService $userService)
     {
         //TODO: update user info
         http_response_code(200);
@@ -28,7 +35,7 @@ class ApiHandler
     }
 
     /** --> USER DELETE <-- */
-    public function processUserDELETERequest($userInputs)
+    public function processUserDELETERequest($userInputs,UserService $userService)
     {
         //TODO: DELETE user
         http_response_code(200);
@@ -39,7 +46,7 @@ class ApiHandler
     }
 
     /** --> USER GET <-- */
-    public function processUserGETRequest($userInputs)
+    public function processUserGETRequest($userInputs,UserService $userService)
     {
         //TODO: GET user
         http_response_code(200);
