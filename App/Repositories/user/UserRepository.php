@@ -76,7 +76,24 @@ class UserRepository implements UserRepositoryInterface
 
     public function getUserByUsername($username)
     {
-        // TODO: Implement getUserByUsername() method.
+        try {
+            return $this->db->query("
+                SELECT id,
+                       username,
+                       email,
+                       password,
+                       role,
+                       first_name AS firstName,
+                       last_name AS lastName
+                FROM users
+                WHERE username = :username
+            ")->execute(array(
+                ":username" => $username
+            ))->fetch(UserDTO::class)
+                ->current();
+        }catch (PDOException $e){
+            return 'Error! ' . $e->getMessage();
+        }
     }
 
     public function getUserByEmail($email)
