@@ -18,7 +18,7 @@ class ApiHandler
         }
         /** CREATE User */
         else {
-            $userService->create($userInputs);
+            $userService->register($userInputs);
         }
     }
 
