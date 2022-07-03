@@ -4,15 +4,19 @@ namespace App\Services\user;
 
 use App\Models\user\UserDTO;
 use App\Repositories\user\UserRepository;
+use App\Services\encryption\EncryptionService;
+use AuthValidator;
 use Exception;
 
 class UserService implements UserServiceInterface
 {
     private UserRepository $userRepository;
+    private EncryptionService $encryptionService;
 
     public function __construct()
     {
         $this->userRepository = new UserRepository();
+        $this->encryptionService = new EncryptionService();
     }
 
     public function create($userInputs)
@@ -28,29 +32,37 @@ class UserService implements UserServiceInterface
                 'message' => 'Empty Username or Password!'
             ],JSON_PRETTY_PRINT);
         }
+        $password = $userInputs['password'];
 
-        if (!$this->userRepository->getUserByUsername($userInputs['username'])){
+        $userFromDb = $this->userRepository->getUserByUsername($userInputs['username']);
+
+        if (null === $userFromDb){
             http_response_code(403);
             echo json_encode([
-                'message' => 'Such Username not Exist!'
+                'message' => 'Wrong Username or Password!'
             ],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (false === $this->encryptionService->verify($password,$userFromDb->getPassword())){
+
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Wrong Username or Password!'
+            ],JSON_PRETTY_PRINT);
+            return;
         }
 
         try {
-            $user = new UserDTO();
-            $user->setUsername($userInputs['username']);
-            $user->setPassword($userInputs['password']);
-            $this->userRepository->login($user);
+            $token = AuthValidator::createToken($userFromDb);
 
-            http_response_code(201);
-            echo json_encode([
-                'message' => 'Successfully Registered!'
-            ],JSON_PRETTY_PRINT);
+            http_response_code(200);
+            echo json_encode($token,JSON_PRETTY_PRINT);
 
         } catch (Exception $e) {
             http_response_code(403);
             echo json_encode([
-                'message' => 'Error! Wrong Username or Password ' . $e->getMessage()
+                'message' => 'Error! ' . $e->getMessage()
             ],JSON_PRETTY_PRINT);
         }
     }
