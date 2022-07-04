@@ -109,13 +109,15 @@ class ApiHandler
     }
 
     /** --> GOAL GET <-- */
-    function processGoalGETRequest($userInputs, $goalService)
+    function processGoalGETRequest($userInputs, $goal_id,$goalService)
     {
         $userInfo = $this->validateToken($userInputs);
         if (null === $userInfo){
             return;
         }
-        //TODO
+
+        $user_id = $userInfo['id'];
+        $goalService->getGoalById($user_id,$goal_id);
     }
 
 

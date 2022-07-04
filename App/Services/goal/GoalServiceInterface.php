@@ -10,6 +10,6 @@ interface GoalServiceInterface
     public function updateCategory(array $userInputs, array $userInfo);
     public function updateDueDate(array $userInputs, array $userInfo);
     public function delete(array $userInputs, array $userInfo);
-    public function getGoalById(array $userInputs, array $userInfo);
+    public function getGoalById(int $user_id, int $goal_id);
     public function getUserGoalsByUserId(array $userInputs, array $userInfo);
 }
