@@ -80,15 +80,15 @@ class ApiHandler
 
         } elseif (isset($userInputs['description'])) {
 
-            $goalService->updateDescription($userInputs,$userInfo); //TODO
+            $goalService->updateDescription($userInputs,$userInfo);
 
         } elseif (isset($userInputs['due_date'])) {
 
-            $goalService->updateDueDate($userInputs,$userInfo); //TODO
+            $goalService->updateDueDate($userInputs,$userInfo);
 
         }elseif (isset($userInputs['category'])) {
 
-            $goalService->updateCategory($userInputs,$userInfo); //TODO
+            $goalService->updateCategory($userInputs,$userInfo);
 
         }else {
             http_response_code(403);

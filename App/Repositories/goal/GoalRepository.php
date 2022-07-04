@@ -55,7 +55,7 @@ class GoalRepository implements GoalRepositoryInterface
             return true;
         }catch (PDOException $PDOException){
             $err = $PDOException->getMessage();
-            //LOG the errors
+            //TODO LOG the errors
             return false;
         }
     }
@@ -64,6 +64,22 @@ class GoalRepository implements GoalRepositoryInterface
     public function updateDescription(GoalDTO $goalDTO): bool
     {
         // TODO: Implement updateDescription() method.
+        try {
+            $this->db->query("
+                UPDATE goals
+                SET goal_description = :description
+                WHERE goal_id = :id AND user_id = :user_id
+            ")->execute(array(
+                ':id' => $goalDTO->getId(),
+                ':user_id' => $goalDTO->getUserId(),
+                ':description' => $goalDTO->getDescription(),
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO LOG the errors
+            return false;
+        }
     }
 
     public function updateDueDate(GoalDTO $goalDTO): bool

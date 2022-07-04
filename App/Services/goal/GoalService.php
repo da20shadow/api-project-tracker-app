@@ -77,20 +77,11 @@ class GoalService implements GoalServiceInterface
             return;
         }
 
-        if ($userInfo['id'] !== $goal->getUserId()){
-            http_response_code(403);
-            echo json_encode([
-                'message' => 'Error! Invalid Request!'
-            ],JSON_PRETTY_PRINT);
+        if (!$this->validateGoalOwner($userInfo['id'],$goal->getUserId())){
             return;
         }
 
-        $goalFromDb = $this->goalRepository->getGoalById($goal);
-        if (null === $goalFromDb){
-            http_response_code(403);
-            echo json_encode([
-                'message' => 'Error! Invalid Goal ID or User ID!'
-            ],JSON_PRETTY_PRINT);
+        if (!$this->goalExist($goal)){
             return;
         }
 
@@ -113,6 +104,41 @@ class GoalService implements GoalServiceInterface
     public function updateDescription(array $userInputs,array $userInfo)
     {
         // TODO: Implement updateDescription() method.
+        $goal = new GoalDTO();
+
+        try {
+            $goal->setDescription($userInputs['description']);
+            $goal->setId($userInputs['goal_id']);
+            $goal->setUserId($userInputs['user_id']);
+        }catch (Exception $exception){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! ' . $exception->getMessage()
+            ],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!$this->validateGoalOwner($userInfo['id'],$goal->getUserId())){
+            return;
+        }
+
+        if (!$this->goalExist($goal)){
+            return;
+        }
+
+        $result = $this->goalRepository->updateDescription($goal);
+
+        if (!$result){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ],JSON_PRETTY_PRINT);
+            return;
+        }
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Successfully Changed Goal description!'
+        ],JSON_PRETTY_PRINT);
     }
 
     public function updateDueDate(array $userInputs,array $userInfo)
@@ -141,5 +167,31 @@ class GoalService implements GoalServiceInterface
     public function getUserGoalsByUserId(array $userInputs, array $userInfo)
     {
         // TODO: Implement getUserGoalsByUserId() method.
+    }
+
+    /** -----------------VALIDATIONS----------------- */
+    private function validateGoalOwner($user_id,$goal_user_id): bool
+    {
+        if ($user_id !== $goal_user_id){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ],JSON_PRETTY_PRINT);
+            return false;
+        }
+        return true;
+    }
+    private function goalExist(GoalDTO $goalDTO): bool
+    {
+        $goalFromDb = $this->goalRepository->getGoalById($goalDTO);
+
+        if (null === $goalFromDb){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Goal ID or User ID!'
+            ],JSON_PRETTY_PRINT);
+            return false;
+        }
+        return true;
     }
 }
