@@ -108,7 +108,7 @@ class ApiHandler
         $goalService->delete($userInputs,$userInfo);
     }
 
-    /** --> GOAL GET <-- */
+    /** --> GOAL GET Single Goal <-- */
     function processGETSingleGoalRequest($userInputs, $goal_id,$goalService)
     {
         $userInfo = $this->validateToken($userInputs);
@@ -119,6 +119,7 @@ class ApiHandler
         $user_id = $userInfo['id'];
         $goalService->getGoalById($user_id,$goal_id);
     }
+    /** --> GOAL GET Single Goal <-- */
     public function processGETAllGoalsRequest($userInputs, $user_id, $goalService)
     {
         $userInfo = $this->validateToken($userInputs);
@@ -134,15 +135,38 @@ class ApiHandler
         $goalService->getGoalsByUserId($user_id);
     }
 
+
     /** ---------------- TASK Requests --------------- */
 
     /** --> TASK POST <-- */
+    public function taskPOSTRequest($userInputs,$userService)
+    {
+        //TODO Next
+    }
 
     /** --> TASK PATCH <-- */
+    public function taskPATCHRequest($userInputs,$userService)
+    {
+        //TODO Next
+    }
 
     /** --> TASK DELETE <-- */
+    public function taskDELETERequest($userInputs,$userService)
+    {
+        //TODO Next
+    }
 
-    /** --> TASK GET <-- */
+    /** --> TASK GET Single Task By ID <-- */
+    public function taskGETSingleTaskRequest($userInputs,$task_id,$userService)
+    {
+        //TODO Next
+    }
+
+    /** --> TASK GET All Tasks With Goal ID <-- */
+    public function taskGETAllTasksRequest($userInputs,$goal_id,$userService)
+    {
+        //TODO Next
+    }
 
 
     /** -------------- SUBTASK Requests --------------- */
