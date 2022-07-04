@@ -9,6 +9,7 @@ use App\Repositories\task\TaskRepository;
 use App\Repositories\task\TaskRepositoryInterface;
 use App\Services\goal\GoalService;
 use Exception;
+use MongoDB\Driver\Exception\ExecutionTimeoutException;
 
 class TaskService implements TaskServiceInterface
 {
@@ -485,9 +486,43 @@ class TaskService implements TaskServiceInterface
 
     /** ------------------GET-------------------- */
 
+    /** GET Single Task By Task ID and User ID */
     public function getTaskById($user_id, $task_id)
     {
-        // TODO: Implement getTaskById() method.
+        try {
+            $task = new TaskDTO();
+            $task->setId($task_id);
+            $task->setUserId($user_id);
+        }catch (Exception $exception){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! ' . $exception->getMessage()
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $taskFromDB = $this->taskRepository->getTaskById($task);
+
+        if (null === $taskFromDB) {
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'id' => $taskFromDB->getId(),
+            'title' => $taskFromDB->getTitle(),
+            'description' => $taskFromDB->getDescription(),
+            'priority' => $taskFromDB->getPriority(),
+            'progress' => $taskFromDB->getProgress(),
+            'status' => $taskFromDB->getStatus(),
+            'dueDate' => $taskFromDB->getDueDate(),
+            'createdOn' => $taskFromDB->getCreatedOn(),
+            'goalId' => $taskFromDB->getGoalId(),
+        ], JSON_PRETTY_PRINT);
     }
 
     public function getTasksByGoalId($goal_id)

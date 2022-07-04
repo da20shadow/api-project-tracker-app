@@ -115,9 +115,7 @@ class ApiHandler
         if (null === $userInfo){
             return;
         }
-
-        $user_id = $userInfo['id'];
-        $goalService->getGoalById($user_id,$goal_id);
+        $goalService->getGoalById($userInfo['id'],$goal_id);
     }
     /** --> GOAL GET Single Goal <-- */
     public function processGETAllGoalsRequest($userInputs, $user_id, $goalService)
@@ -211,7 +209,7 @@ class ApiHandler
         if (null === $userInfo){
             return;
         }
-        //TODO Next
+        $taskService->getTaskById($userInfo['id'],$task_id);
     }
 
     /** --> TASK GET All Tasks With Goal ID <-- */
