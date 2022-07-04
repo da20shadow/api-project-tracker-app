@@ -114,12 +114,42 @@ class TaskRepository implements TaskRepositoryInterface
 
     public function updateProgress(TaskDTO $taskDTO): bool
     {
-        // TODO: Implement updatePriority() method.
+        try {
+            $this->db->query("
+            UPDATE tasks
+            SET progress = :progress
+            WHERE task_id = :task_id AND user_id = :user_id
+        ")->execute(array(
+                ':progress' => $taskDTO->getProgress(),
+                ':task_id' => $taskDTO->getId(),
+                ':user_id' => $taskDTO->getUserId()
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO log errors
+            return false;
+        }
     }
 
     public function updatePriority(TaskDTO $taskDTO): bool
     {
-        // TODO: Implement updatePriority() method.
+        try {
+            $this->db->query("
+            UPDATE tasks
+            SET priority = :priority
+            WHERE task_id = :task_id AND user_id = :user_id
+        ")->execute(array(
+                ':priority' => $taskDTO->getPriority(),
+                ':task_id' => $taskDTO->getId(),
+                ':user_id' => $taskDTO->getUserId()
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO log errors
+            return false;
+        }
     }
 
     public function updateDueDate(TaskDTO $taskDTO): bool

@@ -100,6 +100,10 @@ class TaskDTO
             throw new Exception('Invalid Progress!');
         }
 
+        if ($progress < 0 || $progress > 100){
+            throw new Exception('Invalid Progress!');
+        }
+
         $progress = InputValidator::validateStringInput($progress);
 
         $this->progress = $progress;
