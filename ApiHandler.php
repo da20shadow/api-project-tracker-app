@@ -139,31 +139,31 @@ class ApiHandler
     /** ---------------- TASK Requests --------------- */
 
     /** --> TASK POST <-- */
-    public function taskPOSTRequest($userInputs,$userService)
+    public function taskPOSTRequest($userInputs,$taskService)
     {
         //TODO Next
     }
 
     /** --> TASK PATCH <-- */
-    public function taskPATCHRequest($userInputs,$userService)
+    public function taskPATCHRequest($userInputs,$taskService)
     {
         //TODO Next
     }
 
     /** --> TASK DELETE <-- */
-    public function taskDELETERequest($userInputs,$userService)
+    public function taskDELETERequest($userInputs,$taskService)
     {
         //TODO Next
     }
 
     /** --> TASK GET Single Task By ID <-- */
-    public function taskGETSingleTaskRequest($userInputs,$task_id,$userService)
+    public function taskGETSingleTaskRequest($userInputs,$task_id,$taskService)
     {
         //TODO Next
     }
 
     /** --> TASK GET All Tasks With Goal ID <-- */
-    public function taskGETAllTasksRequest($userInputs,$goal_id,$userService)
+    public function taskGETAllTasksRequest($userInputs,$goal_id,$taskService)
     {
         //TODO Next
     }
