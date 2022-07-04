@@ -59,31 +59,43 @@ class ApiHandler
     /** --> GOAL POST <-- */
     function processGoalPOSTRequest($userInputs, $goalService)
     {
-        if (!isset($userInputs['token']))
-        {
-            http_response_code(403);
-            echo json_encode(['message' => 'Invalid Token!'],JSON_PRETTY_PRINT);
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
             return;
         }
-
-        $accessToken = $userInputs['token'];
-        try {
-            $userInfo = AuthValidator::verifyToken($accessToken);
-            $goalService->create($userInputs,$userInfo);
-
-        } catch (Exception $e) {
-            //TODO: log the error
-            $error = $e->getMessage();
-            http_response_code(403);
-            echo json_encode(['message' => 'Invalid or Expired Token!'],JSON_PRETTY_PRINT);
-            return;
-        }
+        $goalService->create($userInputs, $userInfo);
     }
 
     /** --> GOAL PATCH <--- */
     function processGoalPATCHRequest($userInputs, $goalService)
     {
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
+            return;
+        }
 
+        if (isset($userInputs['title'])) {
+
+            $goalService->updateTitle($userInputs,$userInfo);
+
+        } elseif (isset($userInputs['description'])) {
+
+            $goalService->updateDescription($userInputs,$userInfo); //TODO
+
+        } elseif (isset($userInputs['due_date'])) {
+
+            $goalService->updateDueDate($userInputs,$userInfo); //TODO
+
+        }elseif (isset($userInputs['category'])) {
+
+            $goalService->updateCategory($userInputs,$userInfo); //TODO
+
+        }else {
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Input!'
+            ],JSON_PRETTY_PRINT);
+        }
     }
 
     /** --> GOAL DELETE <-- */
@@ -130,4 +142,26 @@ class ApiHandler
     /** -- IDEA DELETE <-- */
 
     /** -- IDEA GET <-- */
+
+    /** --------------TOKEN VALIDATION-------------- */
+    private function validateToken($userInputs): ?array
+    {
+        if (!isset($userInputs['token'])) {
+            http_response_code(403);
+            echo json_encode(['message' => 'Invalid Token!'], JSON_PRETTY_PRINT);
+            return null;
+        }
+
+        $accessToken = $userInputs['token'];
+        $userInfo = null;
+        try {
+            $userInfo = AuthValidator::verifyToken($accessToken);
+        } catch (Exception $e) {
+            //TODO: log the error
+            $error = $e->getMessage();
+            http_response_code(403);
+            echo json_encode(['message' => 'Invalid or Expired Token!'], JSON_PRETTY_PRINT);
+        }
+        return $userInfo;
+    }
 }
