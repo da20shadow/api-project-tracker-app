@@ -184,7 +184,45 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Status */
     public function updateStatus($userInputs, $userInfo)
     {
-        // TODO: Implement updateStatus() method.
+        if (!isset($userInputs['task_id'])){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        try {
+            $user_id = $userInfo['id'];
+            $task = new TaskDTO();
+            $task->setId($userInputs['task_id']);
+            $task->setStatus($userInputs['status']);
+            $task->setUserId($user_id);
+        }catch (Exception $exception){
+            $err = $exception->getMessage();
+            http_response_code(403);
+            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!$this->taskExist($user_id,$task)){
+            return;
+        }
+
+        $result = $this->taskRepository->updateStatus($task);
+
+        if (!$result){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Successfully Changed Task Status!'
+        ], JSON_PRETTY_PRINT);
     }
 
     /** UPDATE Progress */

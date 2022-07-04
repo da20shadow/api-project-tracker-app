@@ -94,7 +94,22 @@ class TaskRepository implements TaskRepositoryInterface
 
     public function updateStatus(TaskDTO $taskDTO): bool
     {
-        // TODO: Implement updateStatus() method.
+        try {
+            $this->db->query("
+            UPDATE tasks
+            SET status = :status
+            WHERE task_id = :task_id AND user_id = :user_id
+        ")->execute(array(
+                ':status' => $taskDTO->getStatus(),
+                ':task_id' => $taskDTO->getId(),
+                ':user_id' => $taskDTO->getUserId()
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO log errors
+            return false;
+        }
     }
 
     public function updateProgress(TaskDTO $taskDTO): bool
