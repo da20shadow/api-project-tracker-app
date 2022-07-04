@@ -40,6 +40,10 @@ class GoalRepository implements GoalRepositoryInterface
         }
     }
 
+
+    /** ---------------------------UPDATE--------------------------- */
+
+    /** UPDATE Title */
     public function updateTitle(GoalDTO $goalDTO): bool
     {
         try {
@@ -59,11 +63,9 @@ class GoalRepository implements GoalRepositoryInterface
             return false;
         }
     }
-
-    /** ---------------------------UPDATE--------------------------- */
+    /** UPDATE Description */
     public function updateDescription(GoalDTO $goalDTO): bool
     {
-        // TODO: Implement updateDescription() method.
         try {
             $this->db->query("
                 UPDATE goals
@@ -81,8 +83,28 @@ class GoalRepository implements GoalRepositoryInterface
             return false;
         }
     }
-
+    /** UPDATE Due Date */
     public function updateDueDate(GoalDTO $goalDTO): bool
+    {
+        try {
+            $this->db->query("
+                UPDATE goals
+                SET due_date = :due_date
+                WHERE goal_id = :id AND user_id = :user_id
+            ")->execute(array(
+                ':id' => $goalDTO->getId(),
+                ':user_id' => $goalDTO->getUserId(),
+                ':due_date' => $goalDTO->getDueDate(),
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO LOG the errors
+            return false;
+        }
+    }
+    /** UPDATE Category */
+    public function updateCategory(GoalDTO $goalDTO): bool
     {
         // TODO: Implement updateDueDate() method.
     }

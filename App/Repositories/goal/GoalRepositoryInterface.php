@@ -11,6 +11,7 @@ interface GoalRepositoryInterface
     public function updateTitle(GoalDTO $goalDTO): bool;
     public function updateDescription(GoalDTO $goalDTO): bool;
     public function updateDueDate(GoalDTO $goalDTO): bool;
+    public function updateCategory(GoalDTO $goalDTO): bool;
     public function delete(GoalDTO $goalDTO): bool;
     public function getGoalById(GoalDTO $goalDTO): ?GoalDTO;
     public function getGoalsByUserId(int $user_id): ?Generator;

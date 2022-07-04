@@ -129,6 +129,8 @@ class GoalDTO
 
         $isValid = InputValidator::isDateValid($dueDate);
 
+        //TODO: Validate the DATE Format!
+
         if (!$isValid){
             throw new Exception('Invalid Due Date!');
         }
