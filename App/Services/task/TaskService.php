@@ -140,7 +140,45 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Description */
     public function updateDescription($userInputs, $userInfo)
     {
-        // TODO: Implement updateDescription() method.
+        if (!isset($userInputs['task_id'])){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        try {
+            $user_id = $userInfo['id'];
+            $task = new TaskDTO();
+            $task->setId($userInputs['task_id']);
+            $task->setDescription($userInputs['description']);
+            $task->setUserId($user_id);
+        }catch (Exception $exception){
+            $err = $exception->getMessage();
+            http_response_code(403);
+            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!$this->taskExist($user_id,$task)){
+            return;
+        }
+
+        $result = $this->taskRepository->updateDescription($task);
+
+        if (!$result){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Successfully Changed Task Description!'
+        ], JSON_PRETTY_PRINT);
     }
 
     /** UPDATE Status */
