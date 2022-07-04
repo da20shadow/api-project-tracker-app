@@ -299,9 +299,46 @@ class GoalService implements GoalServiceInterface
         ], JSON_PRETTY_PRINT);
     }
 
-    public function getUserGoalsByUserId(array $userInputs, array $userInfo)
+    public function getGoalsByUserId(int $user_id)
     {
-        // TODO: Implement getUserGoalsByUserId() method.
+        $goalsGenerator = $this->goalRepository->getGoalsByUserId($user_id);
+
+        if (null === $goalsGenerator)
+        {
+            http_response_code(403);
+            echo json_encode(['message' => 'No Goals Added Yet!'],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $goals = $this->generateGoalList($goalsGenerator);
+
+        if (count($goals) === 0)
+        {
+            http_response_code(403);
+            echo json_encode(['message' => 'No Goals Added Yet!'],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode(['goals' => $goals],JSON_PRETTY_PRINT);
+    }
+
+    /** --------------CREATORS AND GENERATORS-------------- */
+    public function generateGoalList($goalsGenerator): array
+    {
+        $goals = [];
+        foreach ($goalsGenerator as $goal){
+            array_push($goals, [
+                'id' => $goal->getId(),
+                'title' => $goal->getTitle(),
+                'description' => $goal->getDescription(),
+                'category' => $goal->getCategory(),
+                'userId' => $goal->getUserId(),
+                'createdOn' => $goal->getCreatedOn(),
+                'dueDate' => $goal->getDueDate(),
+            ]);
+        }
+        return $goals;
     }
 
 

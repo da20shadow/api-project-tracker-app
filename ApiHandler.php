@@ -109,7 +109,7 @@ class ApiHandler
     }
 
     /** --> GOAL GET <-- */
-    function processGoalGETRequest($userInputs, $goal_id,$goalService)
+    function processGETSingleGoalRequest($userInputs, $goal_id,$goalService)
     {
         $userInfo = $this->validateToken($userInputs);
         if (null === $userInfo){
@@ -119,7 +119,20 @@ class ApiHandler
         $user_id = $userInfo['id'];
         $goalService->getGoalById($user_id,$goal_id);
     }
+    public function processGETAllGoalsRequest($userInputs, $user_id, $goalService)
+    {
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
+            return;
+        }
+        if ($user_id != $userInfo['id']){
+            http_response_code(403);
+            echo json_encode(['message' => 'Invalid Request!']);
+            return;
+        }
 
+        $goalService->getGoalsByUserId($user_id);
+    }
 
     /** ---------------- TASK Requests --------------- */
 

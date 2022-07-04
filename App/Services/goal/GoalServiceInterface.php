@@ -11,5 +11,5 @@ interface GoalServiceInterface
     public function updateDueDate(array $userInputs, array $userInfo);
     public function delete(array $userInputs, array $userInfo);
     public function getGoalById(int $user_id, int $goal_id);
-    public function getUserGoalsByUserId(array $userInputs, array $userInfo);
+    public function getGoalsByUserId(int $user_id);
 }

@@ -160,8 +160,8 @@ class GoalRepository implements GoalRepositoryInterface
                     FROM goals
                     WHERE goal_id = :id AND user_id = :user_id
             ")->execute(array(
-                'id' => $goalDTO->getId(),
-                'user_id' => $goalDTO->getUserId()
+                ':id' => $goalDTO->getId(),
+                ':user_id' => $goalDTO->getUserId()
             ))->fetch(GoalDTO::class)
                 ->current();
         }catch (PDOException $PDOException){
@@ -173,6 +173,27 @@ class GoalRepository implements GoalRepositoryInterface
 
     public function getGoalsByUserId(int $user_id): ?Generator
     {
-        // TODO: Implement getGoalsByUserId() method.
+        $goalsGenerator = null;
+        try {
+
+            $goalsGenerator = $this->db->query("
+                SELECT goal_id AS id,
+                        goal_title AS title,
+                        goal_description AS description,
+                        goal_category AS category,
+                        user_id AS userId,
+                        created_on AS createdOn,
+                        due_date AS dueDate
+                    FROM goals
+                    WHERE user_id = :user_id
+            ")->execute(array(
+                ':user_id' => $user_id
+            ))->fetch(GoalDTO::class);
+
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO log the errors
+        }
+        return $goalsGenerator;
     }
 }
