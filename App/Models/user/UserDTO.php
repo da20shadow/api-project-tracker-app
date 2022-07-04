@@ -3,6 +3,7 @@
 namespace App\Models\user;
 
 use App\Services\encryption\EncryptionService;
+use App\Services\validator\InputValidator;
 use Exception;
 
 class UserDTO
@@ -104,7 +105,7 @@ class UserDTO
             throw new Exception('Username can not be empty!');
         }
 
-        $username = $this->validateInput($username);
+        $username = InputValidator::validateStringInput($username);
 
         if (strlen($username) < 3 || strlen($username) > 45){
             throw new Exception('Username must be between 3 - 45 characters!');
@@ -128,7 +129,7 @@ class UserDTO
             throw new Exception('Email can not be empty!');
         }
 
-        $email = $this->validateInput($email);
+        $email = InputValidator::validateStringInput($email);
 
         if (!filter_var($email,FILTER_VALIDATE_EMAIL)){
             throw new Exception('Invalid Email!');
@@ -152,7 +153,7 @@ class UserDTO
             throw new Exception('Password can not be empty!');
         }
 
-        $password = $this->validateInput($password);
+        $password = InputValidator::validateStringInput($password);
 
         if (strlen($password) < 8 || strlen($password) > 245){
             throw new Exception('Password must be between 8 and 45 characters!');
@@ -174,7 +175,7 @@ class UserDTO
             $firstName = 'Firstname';
         }
 
-        $firstName = $this->validateInput($firstName);
+        $firstName = InputValidator::validateStringInput($firstName);
 
         if (strlen($firstName) < 2 || strlen($firstName) > 75){
             throw new Exception('Name must be between 2 and 75 characters!');
@@ -193,7 +194,7 @@ class UserDTO
             $lastName = 'Lastname';
         }
 
-        $lastName = $this->validateInput($lastName);
+        $lastName = InputValidator::validateStringInput($lastName);
 
         if (strlen($lastName) < 2 || strlen($lastName) > 75){
             throw new Exception('Name must be between 2 and 75 characters!');
@@ -218,13 +219,6 @@ class UserDTO
 
         $this->role = $role;
         return $this;
-    }
-
-    private function validateInput($input): string
-    {
-        $input = trim($input);
-        $input = htmlspecialchars($input);
-        return stripcslashes($input);
     }
 
 }
