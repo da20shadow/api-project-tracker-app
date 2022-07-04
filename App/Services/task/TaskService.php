@@ -23,18 +23,17 @@ class TaskService implements TaskServiceInterface
     /** CREATE New Task */
     public function create($userInputs, $userInfo)
     {
-        //[token,title,goal_id AND IF description,due_date,priority,status OK]
         if (!isset($userInputs['title']) || !isset($userInputs['goal_id'])) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Task title can not be empty!'
             ], JSON_PRETTY_PRINT);
+            return;
         }
 
         $title = $userInputs['title'];
         $goal_id = $userInputs['goal_id'];
         $user_id = $userInfo['id'];
-        $task = null;
         try {
 
             $task = TaskDTO::create($title,$goal_id,$user_id);
@@ -97,7 +96,45 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Title */
     public function updateTitle($userInputs, $userInfo)
     {
-        // TODO: Implement updateTitle() method.
+        if (!isset($userInputs['task_id'])){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        try {
+            $user_id = $userInfo['id'];
+            $task = new TaskDTO();
+            $task->setId($userInputs['task_id']);
+            $task->setTitle($userInputs['title']);
+            $task->setUserId($user_id);
+        }catch (Exception $exception){
+            $err = $exception->getMessage();
+            http_response_code(403);
+            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!$this->taskExist($user_id,$task)){
+            return;
+        }
+
+        $result = $this->taskRepository->updateTitle($task);
+
+        if (!$result){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Successfully Changed Task title!'
+        ], JSON_PRETTY_PRINT);
     }
 
     /** UPDATE Description */
@@ -155,5 +192,29 @@ class TaskService implements TaskServiceInterface
     public function getTasksByGoalId($goal_id)
     {
         // TODO: Implement getTasksByGoalId() method.
+    }
+
+    /** ---------------VALIDATORS AND GENERATORS--------------- */
+
+    private function taskExist($user_id, TaskDTO $taskDTO): bool
+    {
+        $taskFromDb = $this->taskRepository->getTaskById($taskDTO);
+
+        if (null === $taskFromDb) {
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Task ID or User ID!'
+            ], JSON_PRETTY_PRINT);
+            return false;
+        }
+
+        if ($user_id !== $taskFromDb->getUserId()) {
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return false;
+        }
+        return true;
     }
 }

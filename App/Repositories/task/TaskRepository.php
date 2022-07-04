@@ -51,9 +51,25 @@ class TaskRepository implements TaskRepositoryInterface
 
     /** -----------------UPDATE-------------------- */
 
+    /** UPDATE Task Title */
     public function updateTitle(TaskDTO $taskDTO): bool
     {
-        // TODO: Implement updateTitle() method.
+        try {
+            $this->db->query("
+            UPDATE tasks
+            SET task_title = :title
+            WHERE task_id = :task_id AND user_id = :user_id
+        ")->execute(array(
+                ':title' => $taskDTO->getTitle(),
+                ':task_id' => $taskDTO->getId(),
+                ':user_id' => $taskDTO->getUserId()
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO log errors
+            return false;
+        }
     }
 
     public function updateDescription(TaskDTO $taskDTO): bool
@@ -99,7 +115,32 @@ class TaskRepository implements TaskRepositoryInterface
 
     public function getTaskById(TaskDTO $taskDTO): ?TaskDTO
     {
-        // TODO: Implement getTaskById() method.
+        $task = null;
+        try {
+            $task= $this->db->query("
+            SELECT task_id AS id,
+                   task_title AS title,
+                   task_description AS description,
+                   priority,
+                   progress,
+                   status, 
+                   due_date AS dueDate, 
+                   created_on AS createdOn,
+                   goal_id AS goalId, 
+                   user_id AS userId
+            FROM tasks
+            WHERE task_id = :task_id AND user_id = :user_id
+        ")->execute(array(
+                ':task_id' => $taskDTO->getId(),
+                ':user_id' => $taskDTO->getUserId()
+            ))->fetch(TaskDTO::class)
+                ->current();
+
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO log errors
+        }
+        return $task;
     }
 
     public function getTasksByGoalId(int $goal_id): ?Generator

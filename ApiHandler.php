@@ -158,31 +158,31 @@ class ApiHandler
 
         if (isset($userInputs['title']))
         {
-            //TODO Next
+            $taskService->updateTitle($userInputs, $userInfo);
         }
         else if (isset($userInputs['description']))
         {
-            //TODO Next
+            $taskService->updateDescription($userInputs, $userInfo);
         }
         else if (isset($userInputs['status']))
         {
-            //TODO Next
+            $taskService->updateStatus($userInputs, $userInfo);
         }
         else if (isset($userInputs['progress']))
         {
-            //TODO Next
+            $taskService->updateProgress($userInputs, $userInfo);
         }
         else if (isset($userInputs['priority']))
         {
-            //TODO Next
+            $taskService->updatePriority($userInputs, $userInfo);
         }
         else if (isset($userInputs['due_date']))
         {
-            //TODO Next
+            $taskService->updateDueDate($userInputs, $userInfo);
         }
         else if (isset($userInputs['goal_id']))
         {
-            //TODO Next
+            $taskService->updateGoalId($userInputs, $userInfo);
         }else {
             http_response_code(403);
             echo json_encode(['message' => 'Invalid Request!']);
@@ -192,6 +192,11 @@ class ApiHandler
     /** --> TASK DELETE <-- */
     public function taskDELETERequest($userInputs,$taskService)
     {
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
+            return;
+        }
+
         $userInfo = $this->validateToken($userInputs);
         if (null === $userInfo){
             return;
