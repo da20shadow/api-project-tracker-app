@@ -17,6 +17,7 @@ class GoalRepository implements GoalRepositoryInterface
         $this->db = DBConnector::create();
     }
 
+    /** ----------------------CREATE---------------------- */
     public function insert(GoalDTO $goalDTO): bool
     {
         try {
@@ -59,6 +60,7 @@ class GoalRepository implements GoalRepositoryInterface
         }
     }
 
+    /** ---------------------------UPDATE--------------------------- */
     public function updateDescription(GoalDTO $goalDTO): bool
     {
         // TODO: Implement updateDescription() method.
@@ -69,17 +71,40 @@ class GoalRepository implements GoalRepositoryInterface
         // TODO: Implement updateDueDate() method.
     }
 
+    /** --------------------------DELETE-------------------------- */
     public function delete(GoalDTO $goalDTO): bool
     {
         // TODO: Implement delete() method.
     }
 
-    public function getGoalById(int $goal_id): GoalDTO
+    /** ----------------------------GET---------------------------- */
+    public function getGoalById(GoalDTO $goalDTO): ?GoalDTO
     {
-        // TODO: Implement getGoalById() method.
+        $goal = null;
+        try {
+            $goal = $this->db->query("
+                SELECT goal_id AS id,
+                        goal_title AS title,
+                        goal_description AS description,
+                        goal_category AS category,
+                        user_id AS userId,
+                        created_on AS createdOn,
+                        due_date AS dueDate
+                    FROM goals
+                    WHERE goal_id = :id AND user_id = :user_id
+            ")->execute(array(
+                'id' => $goalDTO->getId(),
+                'user_id' => $goalDTO->getUserId()
+            ))->fetch(GoalDTO::class)
+                ->current();
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO log the errors
+        }
+        return $goal;
     }
 
-    public function getGoalsByUserId(int $user_id): Generator
+    public function getGoalsByUserId(int $user_id): ?Generator
     {
         // TODO: Implement getGoalsByUserId() method.
     }
