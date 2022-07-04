@@ -154,7 +154,22 @@ class TaskRepository implements TaskRepositoryInterface
 
     public function updateDueDate(TaskDTO $taskDTO): bool
     {
-        // TODO: Implement updateDueDate() method.
+        try {
+            $this->db->query("
+            UPDATE tasks
+            SET due_date = :due_date
+            WHERE task_id = :task_id AND user_id = :user_id
+        ")->execute(array(
+                ':due_date' => $taskDTO->getDueDate(),
+                ':task_id' => $taskDTO->getId(),
+                ':user_id' => $taskDTO->getUserId()
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO log errors
+            return false;
+        }
     }
 
     public function updateGoalId(int $newGoalId, TaskDTO $taskDTO): bool

@@ -316,7 +316,45 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Due Date */
     public function updateDueDate($userInputs, $userInfo)
     {
-        // TODO: Implement updateDueDate() method.
+        if (!isset($userInputs['task_id'])){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        try {
+            $user_id = $userInfo['id'];
+            $task = new TaskDTO();
+            $task->setId($userInputs['task_id']);
+            $task->setDueDate($userInputs['due_date']);
+            $task->setUserId($user_id);
+        }catch (Exception $exception){
+            $err = $exception->getMessage();
+            http_response_code(403);
+            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!$this->taskExist($user_id,$task)){
+            return;
+        }
+
+        $result = $this->taskRepository->updateDueDate($task);
+
+        if (!$result){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Successfully Changed Task Due Date!'
+        ], JSON_PRETTY_PRINT);
     }
 
     /** UPDATE Task Goal ID */
