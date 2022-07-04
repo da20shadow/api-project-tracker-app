@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\goal\GoalService;
 use App\Services\user\UserService;
 
 spl_autoload_register();
@@ -30,8 +31,8 @@ $inputData = json_decode(file_get_contents('php://input'), true);
 $apiHandler = new ApiHandler();
 
 /** ---------------- USER API Requests ------------- */
-// api url -> /user/
-if (preg_match("/^\/user[\/]?$/", $url))
+// api url -> /users/
+if (preg_match("/^\/users[\/]?$/", $url))
 {
     $userService = new UserService();
     /** LOGIN / REGISTER */
@@ -57,7 +58,31 @@ if (preg_match("/^\/user[\/]?$/", $url))
 }
 
 /** ---------------- GOAL API Requests ------------- */
-
+// api url -> /goals/
+else if (preg_match("/^\/goals[\/]?$/", $url))
+{
+    $goalService = new GoalService();
+    /** CREATE Goal */
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $inputData)
+    {
+        $apiHandler->processGoalPOSTRequest($inputData,$goalService);
+    }
+    /** UPDATE Goal */
+    elseif ($_SERVER['REQUEST_METHOD'] === 'PATCH' && $inputData)
+    {
+        $apiHandler->processGoalPATCHRequest($inputData,$goalService);
+    }
+    /** GET Goal */
+    elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $inputData)
+    {
+        $apiHandler->processGoalDELETERequest($inputData,$goalService);
+    }
+    /** DELETE Goal */
+    elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && $inputData)
+    {
+        $apiHandler->processGoalGETRequest($inputData,$goalService);
+    }
+}
 
 /** ---------------- TASK API Requests ------------- */
 
