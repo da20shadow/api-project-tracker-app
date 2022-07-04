@@ -65,7 +65,7 @@ class TaskRepository implements TaskRepositoryInterface
                 ':user_id' => $taskDTO->getUserId()
             ));
             return true;
-        }catch (PDOException $PDOException){
+        } catch (PDOException $PDOException) {
             $err = $PDOException->getMessage();
             //TODO log errors
             return false;
@@ -85,7 +85,7 @@ class TaskRepository implements TaskRepositoryInterface
                 ':user_id' => $taskDTO->getUserId()
             ));
             return true;
-        }catch (PDOException $PDOException){
+        } catch (PDOException $PDOException) {
             $err = $PDOException->getMessage();
             //TODO log errors
             return false;
@@ -105,7 +105,7 @@ class TaskRepository implements TaskRepositoryInterface
                 ':user_id' => $taskDTO->getUserId()
             ));
             return true;
-        }catch (PDOException $PDOException){
+        } catch (PDOException $PDOException) {
             $err = $PDOException->getMessage();
             //TODO log errors
             return false;
@@ -125,7 +125,7 @@ class TaskRepository implements TaskRepositoryInterface
                 ':user_id' => $taskDTO->getUserId()
             ));
             return true;
-        }catch (PDOException $PDOException){
+        } catch (PDOException $PDOException) {
             $err = $PDOException->getMessage();
             //TODO log errors
             return false;
@@ -145,7 +145,7 @@ class TaskRepository implements TaskRepositoryInterface
                 ':user_id' => $taskDTO->getUserId()
             ));
             return true;
-        }catch (PDOException $PDOException){
+        } catch (PDOException $PDOException) {
             $err = $PDOException->getMessage();
             //TODO log errors
             return false;
@@ -165,7 +165,7 @@ class TaskRepository implements TaskRepositoryInterface
                 ':user_id' => $taskDTO->getUserId()
             ));
             return true;
-        }catch (PDOException $PDOException){
+        } catch (PDOException $PDOException) {
             $err = $PDOException->getMessage();
             //TODO log errors
             return false;
@@ -185,7 +185,7 @@ class TaskRepository implements TaskRepositoryInterface
                 ':user_id' => $taskDTO->getUserId()
             ));
             return true;
-        }catch (PDOException $PDOException){
+        } catch (PDOException $PDOException) {
             $err = $PDOException->getMessage();
             //TODO log errors
             return false;
@@ -207,7 +207,7 @@ class TaskRepository implements TaskRepositoryInterface
                 ':user_id' => $taskDTO->getUserId(),
             ));
             return true;
-        }catch (PDOException $PDOException){
+        } catch (PDOException $PDOException) {
             $err = $PDOException->getMessage();
             //TODO LOG the errors
             return false;
@@ -221,7 +221,7 @@ class TaskRepository implements TaskRepositoryInterface
     {
         $task = null;
         try {
-            $task= $this->db->query("
+            $task = $this->db->query("
             SELECT task_id AS id,
                    task_title AS title,
                    task_description AS description,
@@ -240,15 +240,38 @@ class TaskRepository implements TaskRepositoryInterface
             ))->fetch(TaskDTO::class)
                 ->current();
 
-        }catch (PDOException $PDOException){
+        } catch (PDOException $PDOException) {
             $err = $PDOException->getMessage();
             //TODO log errors
         }
         return $task;
     }
 
-    public function getTasksByGoalId(int $goal_id): ?Generator
+    public function getTasksByGoalId(int $user_id, int $goal_id): ?Generator
     {
-        // TODO: Implement getTasksByGoalId() method.
+        $tasksGenerator = null;
+        try {
+            $tasksGenerator = $this->db->query("
+                SELECT task_id AS id,
+                   task_title AS title,
+                   task_description AS description,
+                   priority,
+                   progress,
+                   status, 
+                   due_date AS dueDate, 
+                   created_on AS createdOn,
+                   goal_id AS goalId, 
+                   user_id AS userId
+                   FROM tasks
+                WHERE goal_id = :goal_id AND user_id = :user_id 
+            ")->execute(array(
+                'goal_id' => $goal_id,
+                'user_id' => $user_id
+            ))->fetch(TaskDTO::class);
+        }catch (PDOException $PDOException) {
+            $err = $PDOException->getMessage();
+            //TODO log the errors
+        }
+        return $tasksGenerator;
     }
 }

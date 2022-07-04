@@ -7,9 +7,7 @@ use App\Models\task\TaskDTO;
 use App\Repositories\goal\GoalRepository;
 use App\Repositories\task\TaskRepository;
 use App\Repositories\task\TaskRepositoryInterface;
-use App\Services\goal\GoalService;
 use Exception;
-use MongoDB\Driver\Exception\ExecutionTimeoutException;
 
 class TaskService implements TaskServiceInterface
 {
@@ -38,7 +36,7 @@ class TaskService implements TaskServiceInterface
         $user_id = $userInfo['id'];
         try {
 
-            $task = TaskDTO::create($title,$goal_id,$user_id);
+            $task = TaskDTO::create($title, $goal_id, $user_id);
             isset($userInputs['description']) && $task->setDescription($userInputs['description']);
             isset($userInputs['priority']) && $task->setPriority($userInputs['priority']);
             isset($userInputs['status']) && $task->setStatus($userInputs['status']);
@@ -98,7 +96,7 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Title */
     public function updateTitle($userInputs, $userInfo)
     {
-        if (!isset($userInputs['task_id'])){
+        if (!isset($userInputs['task_id'])) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -112,20 +110,20 @@ class TaskService implements TaskServiceInterface
             $task->setId($userInputs['task_id']);
             $task->setTitle($userInputs['title']);
             $task->setUserId($user_id);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             $err = $exception->getMessage();
             http_response_code(403);
-            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            echo json_encode(['message' => 'Error! ' . $err], JSON_PRETTY_PRINT);
             return;
         }
 
-        if (!$this->taskExist($user_id,$task)){
+        if (!$this->taskExist($user_id, $task)) {
             return;
         }
 
         $result = $this->taskRepository->updateTitle($task);
 
-        if (!$result){
+        if (!$result) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -142,7 +140,7 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Description */
     public function updateDescription($userInputs, $userInfo)
     {
-        if (!isset($userInputs['task_id'])){
+        if (!isset($userInputs['task_id'])) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -156,20 +154,20 @@ class TaskService implements TaskServiceInterface
             $task->setId($userInputs['task_id']);
             $task->setDescription($userInputs['description']);
             $task->setUserId($user_id);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             $err = $exception->getMessage();
             http_response_code(403);
-            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            echo json_encode(['message' => 'Error! ' . $err], JSON_PRETTY_PRINT);
             return;
         }
 
-        if (!$this->taskExist($user_id,$task)){
+        if (!$this->taskExist($user_id, $task)) {
             return;
         }
 
         $result = $this->taskRepository->updateDescription($task);
 
-        if (!$result){
+        if (!$result) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -186,7 +184,7 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Status */
     public function updateStatus($userInputs, $userInfo)
     {
-        if (!isset($userInputs['task_id'])){
+        if (!isset($userInputs['task_id'])) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -200,20 +198,20 @@ class TaskService implements TaskServiceInterface
             $task->setId($userInputs['task_id']);
             $task->setStatus($userInputs['status']);
             $task->setUserId($user_id);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             $err = $exception->getMessage();
             http_response_code(403);
-            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            echo json_encode(['message' => 'Error! ' . $err], JSON_PRETTY_PRINT);
             return;
         }
 
-        if (!$this->taskExist($user_id,$task)){
+        if (!$this->taskExist($user_id, $task)) {
             return;
         }
 
         $result = $this->taskRepository->updateStatus($task);
 
-        if (!$result){
+        if (!$result) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -230,7 +228,7 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Progress */
     public function updateProgress($userInputs, $userInfo)
     {
-        if (!isset($userInputs['task_id'])){
+        if (!isset($userInputs['task_id'])) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -244,20 +242,20 @@ class TaskService implements TaskServiceInterface
             $task->setId($userInputs['task_id']);
             $task->setProgress($userInputs['progress']);
             $task->setUserId($user_id);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             $err = $exception->getMessage();
             http_response_code(403);
-            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            echo json_encode(['message' => 'Error! ' . $err], JSON_PRETTY_PRINT);
             return;
         }
 
-        if (!$this->taskExist($user_id,$task)){
+        if (!$this->taskExist($user_id, $task)) {
             return;
         }
 
         $result = $this->taskRepository->updateProgress($task);
 
-        if (!$result){
+        if (!$result) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -274,7 +272,7 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Priority */
     public function updatePriority($userInputs, $userInfo)
     {
-        if (!isset($userInputs['task_id'])){
+        if (!isset($userInputs['task_id'])) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -288,20 +286,20 @@ class TaskService implements TaskServiceInterface
             $task->setId($userInputs['task_id']);
             $task->setPriority($userInputs['priority']);
             $task->setUserId($user_id);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             $err = $exception->getMessage();
             http_response_code(403);
-            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            echo json_encode(['message' => 'Error! ' . $err], JSON_PRETTY_PRINT);
             return;
         }
 
-        if (!$this->taskExist($user_id,$task)){
+        if (!$this->taskExist($user_id, $task)) {
             return;
         }
 
         $result = $this->taskRepository->updatePriority($task);
 
-        if (!$result){
+        if (!$result) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -318,7 +316,7 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Due Date */
     public function updateDueDate($userInputs, $userInfo)
     {
-        if (!isset($userInputs['task_id'])){
+        if (!isset($userInputs['task_id'])) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -332,20 +330,20 @@ class TaskService implements TaskServiceInterface
             $task->setId($userInputs['task_id']);
             $task->setDueDate($userInputs['due_date']);
             $task->setUserId($user_id);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             $err = $exception->getMessage();
             http_response_code(403);
-            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            echo json_encode(['message' => 'Error! ' . $err], JSON_PRETTY_PRINT);
             return;
         }
 
-        if (!$this->taskExist($user_id,$task)){
+        if (!$this->taskExist($user_id, $task)) {
             return;
         }
 
         $result = $this->taskRepository->updateDueDate($task);
 
-        if (!$result){
+        if (!$result) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -362,7 +360,7 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Task Goal ID */
     public function updateGoalId($userInputs, $userInfo)
     {
-        if (!isset($userInputs['task_id'])){
+        if (!isset($userInputs['task_id'])) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Task ID!'
@@ -370,7 +368,7 @@ class TaskService implements TaskServiceInterface
             return;
         }
 
-        if ($userInputs['goal_id'] <= 0){
+        if ($userInputs['goal_id'] <= 0) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Goal!'
@@ -384,14 +382,14 @@ class TaskService implements TaskServiceInterface
             $task->setId($userInputs['task_id']);
             $task->setGoalId($userInputs['goal_id']);
             $task->setUserId($user_id);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             $err = $exception->getMessage();
             http_response_code(403);
-            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            echo json_encode(['message' => 'Error! ' . $err], JSON_PRETTY_PRINT);
             return;
         }
 
-        if (!$this->taskExist($user_id,$task)){
+        if (!$this->taskExist($user_id, $task)) {
             return;
         }
 
@@ -402,21 +400,21 @@ class TaskService implements TaskServiceInterface
             $goalDTO->setId($userInputs['goal_id']);
             $goalFromDb = $goalRepository->getGoalById($goalDTO);
 
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             http_response_code(403);
-            echo json_encode(['message' => 'Error! Invalid Goal'],JSON_PRETTY_PRINT);
+            echo json_encode(['message' => 'Error! Invalid Goal'], JSON_PRETTY_PRINT);
             return;
         }
 
-        if (null === $goalFromDb){
+        if (null === $goalFromDb) {
             http_response_code(403);
-            echo json_encode(['message' => 'Error! Such Goal Not Exist!'],JSON_PRETTY_PRINT);
+            echo json_encode(['message' => 'Error! Such Goal Not Exist!'], JSON_PRETTY_PRINT);
             return;
         }
 
-        $result = $this->taskRepository->updateGoalId($goalFromDb->getId(),$task);
+        $result = $this->taskRepository->updateGoalId($goalFromDb->getId(), $task);
 
-        if (!$result){
+        if (!$result) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Request!'
@@ -435,7 +433,7 @@ class TaskService implements TaskServiceInterface
 
     public function delete($userInputs, $userInfo)
     {
-        if (!isset($userInputs['task_id'])){
+        if (!isset($userInputs['task_id'])) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Task ID!'
@@ -443,7 +441,7 @@ class TaskService implements TaskServiceInterface
             return;
         }
 
-        if ($userInputs['task_id'] <= 0){
+        if ($userInputs['task_id'] <= 0) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Goal ID!'
@@ -455,7 +453,7 @@ class TaskService implements TaskServiceInterface
             $task = new TaskDTO();
             $task->setId($userInputs['task_id']);
             $task->setUserId($userInfo['id']);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! ' . $exception->getMessage()
@@ -463,7 +461,7 @@ class TaskService implements TaskServiceInterface
             return;
         }
 
-        if (!$this->taskExist($task->getUserId(),$task)){
+        if (!$this->taskExist($task->getUserId(), $task)) {
             return;
         }
 
@@ -493,7 +491,7 @@ class TaskService implements TaskServiceInterface
             $task = new TaskDTO();
             $task->setId($task_id);
             $task->setUserId($user_id);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! ' . $exception->getMessage()
@@ -521,16 +519,56 @@ class TaskService implements TaskServiceInterface
             'status' => $taskFromDB->getStatus(),
             'dueDate' => $taskFromDB->getDueDate(),
             'createdOn' => $taskFromDB->getCreatedOn(),
+            'userId' => $taskFromDB->getUserId(),
             'goalId' => $taskFromDB->getGoalId(),
         ], JSON_PRETTY_PRINT);
     }
 
-    public function getTasksByGoalId($goal_id)
+    public function getTasksByGoalId($user_id, $goal_id)
     {
-        // TODO: Implement getTasksByGoalId() method.
+        $tasksGenerator = $this->taskRepository->getTasksByGoalId($user_id, $goal_id);
+
+        if (null === $tasksGenerator)
+        {
+            http_response_code(403);
+            echo json_encode(['message' => 'No Tasks Added Yet!'],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $tasks = $this->generateTasksList($tasksGenerator);
+
+        if (count($tasks) === 0)
+        {
+            http_response_code(403);
+            echo json_encode(['message' => 'No Tasks Added Yet!'],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode(['tasks' => $tasks],JSON_PRETTY_PRINT);
     }
 
     /** ---------------VALIDATORS AND GENERATORS--------------- */
+
+    private function generateTasksList($tasksGenerator): array
+    {
+        $tasks = [];
+        foreach ($tasksGenerator as $task) {
+            array_push($tasks, [
+                'id' => $task->getId(),
+                'title' => $task->getTitle(),
+                'description' => $task->getDescription(),
+                'priority' => $task->getPriority(),
+                'progress' => $task->getProgress(),
+                'status' => $task->getStatus(),
+                'dueDate' => $task->getDueDate(),
+                'createdOn' => $task->getCreatedOn(),
+                'userId' => $task->getUserId(),
+                'goalId' => $task->getGoalId(),
+            ]);
+        }
+        return $tasks;
+    }
 
     private function taskExist($user_id, TaskDTO $taskDTO): bool
     {

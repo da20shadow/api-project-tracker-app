@@ -17,5 +17,5 @@ interface TaskRepositoryInterface
     public function updateGoalId(int $newGoalId,TaskDTO $taskDTO):bool;
     public function delete(TaskDTO $taskDTO):bool;
     public function getTaskById(TaskDTO $taskDTO):?TaskDTO;
-    public function getTasksByGoalId(int $goal_id):?Generator;
+    public function getTasksByGoalId(int $user_id,int $goal_id):?Generator;
 }

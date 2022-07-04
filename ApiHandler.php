@@ -219,7 +219,7 @@ class ApiHandler
         if (null === $userInfo){
             return;
         }
-        //TODO Next
+        $taskService->getTasksByGoalId($userInfo['id'],$goal_id);
     }
 
 

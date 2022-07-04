@@ -24,5 +24,5 @@ interface TaskServiceInterface
 
     public function getTaskById($user_id, $task_id);
 
-    public function getTasksByGoalId($goal_id);
+    public function getTasksByGoalId($user_id,$goal_id);
 }
