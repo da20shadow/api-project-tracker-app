@@ -124,6 +124,7 @@ class GoalRepository implements GoalRepositoryInterface
         }
     }
 
+
     /** --------------------------DELETE-------------------------- */
     public function delete(GoalDTO $goalDTO): bool
     {
@@ -144,7 +145,12 @@ class GoalRepository implements GoalRepositoryInterface
         }
     }
 
+
     /** ----------------------------GET---------------------------- */
+
+    /** GET Single Goal
+     * @returns GoalDTO or null
+     */
     public function getGoalById(GoalDTO $goalDTO): ?GoalDTO
     {
         $goal = null;
@@ -170,7 +176,9 @@ class GoalRepository implements GoalRepositoryInterface
         }
         return $goal;
     }
-
+    /** GET All Goals by user id
+     * @returns Generator or null
+     */
     public function getGoalsByUserId(int $user_id): ?Generator
     {
         $goalsGenerator = null;

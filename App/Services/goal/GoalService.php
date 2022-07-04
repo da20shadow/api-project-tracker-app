@@ -5,7 +5,6 @@ namespace App\Services\goal;
 use App\Models\goal\GoalDTO;
 use App\Repositories\goal\GoalRepository;
 use App\Repositories\goal\GoalRepositoryInterface;
-use App\Services\validator\InputValidator;
 use Exception;
 
 class GoalService implements GoalServiceInterface
@@ -222,7 +221,8 @@ class GoalService implements GoalServiceInterface
     }
 
 
-    /** ----------------DELETE-------------------- */
+    /** ---------------------DELETE-------------------- */
+    /** DELETE Goal */
     public function delete(array $userInputs, array $userInfo)
     {
         $goal = new GoalDTO();
@@ -263,7 +263,11 @@ class GoalService implements GoalServiceInterface
     }
 
 
-    /** ----------------GET-------------------- */
+    /** ---------------------GET-------------------- */
+
+    /** GET Single Goal By goal ID
+     * @returns array with single goal or message
+     */
     public function getGoalById(int $user_id, int $goal_id)
     {
         $goal = new GoalDTO();
@@ -299,6 +303,9 @@ class GoalService implements GoalServiceInterface
         ], JSON_PRETTY_PRINT);
     }
 
+    /** GET ALL Goals By User ID
+     * @returns array with goals or message
+     */
     public function getGoalsByUserId(int $user_id)
     {
         $goalsGenerator = $this->goalRepository->getGoalsByUserId($user_id);
@@ -323,7 +330,12 @@ class GoalService implements GoalServiceInterface
         echo json_encode(['goals' => $goals],JSON_PRETTY_PRINT);
     }
 
+
     /** --------------CREATORS AND GENERATORS-------------- */
+
+    /** CREATE Goal List
+     * @returns array with goals
+     */
     public function generateGoalList($goalsGenerator): array
     {
         $goals = [];
