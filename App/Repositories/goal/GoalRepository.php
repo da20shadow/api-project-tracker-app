@@ -127,7 +127,21 @@ class GoalRepository implements GoalRepositoryInterface
     /** --------------------------DELETE-------------------------- */
     public function delete(GoalDTO $goalDTO): bool
     {
-        // TODO: Implement delete() method.
+        try {
+            $this->db->query("
+                DELETE
+                FROM goals
+                WHERE goal_id = :id AND user_id = :user_id
+            ")->execute(array(
+                ':id' => $goalDTO->getId(),
+                ':user_id' => $goalDTO->getUserId(),
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO LOG the errors
+            return false;
+        }
     }
 
     /** ----------------------------GET---------------------------- */

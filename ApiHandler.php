@@ -101,13 +101,21 @@ class ApiHandler
     /** --> GOAL DELETE <-- */
     function processGoalDELETERequest($userInputs, $goalService)
     {
-
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
+            return;
+        }
+        $goalService->delete($userInputs,$userInfo);
     }
 
     /** --> GOAL GET <-- */
     function processGoalGETRequest($userInputs, $goalService)
     {
-
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
+            return;
+        }
+        //TODO
     }
 
 

@@ -61,6 +61,7 @@ class GoalService implements GoalServiceInterface
     }
 
     /** ----------------UPDATE-------------------- */
+    /** UPDATE Title */
     public function updateTitle(array $userInputs,array $userInfo)
     {
         $goal = new GoalDTO();
@@ -100,7 +101,7 @@ class GoalService implements GoalServiceInterface
         ],JSON_PRETTY_PRINT);
 
     }
-
+    /** UPDATE Description */
     public function updateDescription(array $userInputs,array $userInfo)
     {
         $goal = new GoalDTO();
@@ -139,7 +140,7 @@ class GoalService implements GoalServiceInterface
             'message' => 'Successfully Changed Goal description!'
         ],JSON_PRETTY_PRINT);
     }
-
+    /** UPDATE Due Date */
     public function updateDueDate(array $userInputs,array $userInfo)
     {
         $goal = new GoalDTO();
@@ -178,7 +179,7 @@ class GoalService implements GoalServiceInterface
             'message' => 'Successfully Changed Goal Due Date!'
         ],JSON_PRETTY_PRINT);
     }
-
+    /** UPDATE Category */
     public function updateCategory(array $userInputs, array $userInfo)
     {
         $goal = new GoalDTO();
@@ -222,7 +223,41 @@ class GoalService implements GoalServiceInterface
     /** ----------------DELETE-------------------- */
     public function delete(array $userInputs, array $userInfo)
     {
-        // TODO: Implement delete() method.
+        $goal = new GoalDTO();
+
+        try {
+            $goal->setId($userInputs['goal_id']);
+            $goal->setUserId($userInputs['user_id']);
+        }catch (Exception $exception){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! ' . $exception->getMessage()
+            ],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!$this->validateGoalOwner($userInfo['id'],$goal->getUserId())){
+            return;
+        }
+
+        if (!$this->goalExist($goal)){
+            return;
+        }
+
+        $result = $this->goalRepository->delete($goal);
+
+        if (!$result){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Can not DELETE the goal!'
+            ],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Successfully DELETED Goal!'
+        ],JSON_PRETTY_PRINT);
     }
 
     /** ----------------GET-------------------- */
