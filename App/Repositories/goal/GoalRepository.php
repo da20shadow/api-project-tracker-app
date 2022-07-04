@@ -41,7 +41,22 @@ class GoalRepository implements GoalRepositoryInterface
 
     public function updateTitle(GoalDTO $goalDTO): bool
     {
-        // TODO: Implement updateTitle() method.
+        try {
+            $this->db->query("
+                UPDATE goals
+                SET goal_title = :title
+                WHERE goal_id = :id AND user_id = :user_id
+            ")->execute(array(
+                ':id' => $goalDTO->getId(),
+                ':user_id' => $goalDTO->getUserId(),
+                ':title' => $goalDTO->getTitle(),
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //LOG the errors
+            return false;
+        }
     }
 
     public function updateDescription(GoalDTO $goalDTO): bool
