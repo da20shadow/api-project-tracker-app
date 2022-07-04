@@ -181,7 +181,41 @@ class GoalService implements GoalServiceInterface
 
     public function updateCategory(array $userInputs, array $userInfo)
     {
-        // TODO: Implement updateCategory() method.
+        $goal = new GoalDTO();
+
+        try {
+            $goal->setCategory($userInputs['category']);
+            $goal->setId($userInputs['goal_id']);
+            $goal->setUserId($userInputs['user_id']);
+        }catch (Exception $exception){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! ' . $exception->getMessage()
+            ],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!$this->validateGoalOwner($userInfo['id'],$goal->getUserId())){
+            return;
+        }
+
+        if (!$this->goalExist($goal)){
+            return;
+        }
+
+        $result = $this->goalRepository->updateCategory($goal);
+
+        if (!$result){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ],JSON_PRETTY_PRINT);
+            return;
+        }
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Successfully Changed Goal Category!'
+        ],JSON_PRETTY_PRINT);
     }
 
 

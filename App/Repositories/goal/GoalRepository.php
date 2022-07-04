@@ -106,7 +106,22 @@ class GoalRepository implements GoalRepositoryInterface
     /** UPDATE Category */
     public function updateCategory(GoalDTO $goalDTO): bool
     {
-        // TODO: Implement updateDueDate() method.
+        try {
+            $this->db->query("
+                UPDATE goals
+                SET goal_category = :category
+                WHERE goal_id = :id AND user_id = :user_id
+            ")->execute(array(
+                ':id' => $goalDTO->getId(),
+                ':user_id' => $goalDTO->getUserId(),
+                ':category' => $goalDTO->getCategory(),
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO LOG the errors
+            return false;
+        }
     }
 
     /** --------------------------DELETE-------------------------- */
