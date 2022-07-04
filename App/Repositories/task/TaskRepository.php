@@ -174,7 +174,22 @@ class TaskRepository implements TaskRepositoryInterface
 
     public function updateGoalId(int $newGoalId, TaskDTO $taskDTO): bool
     {
-        // TODO: Implement updateGoalId() method.
+        try {
+            $this->db->query("
+            UPDATE tasks
+            SET goal_id = :newGoalId
+            WHERE task_id = :task_id AND user_id = :user_id
+        ")->execute(array(
+                ':newGoalId' => $newGoalId,
+                ':task_id' => $taskDTO->getId(),
+                ':user_id' => $taskDTO->getUserId()
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO log errors
+            return false;
+        }
     }
 
 
@@ -182,7 +197,21 @@ class TaskRepository implements TaskRepositoryInterface
 
     public function delete(TaskDTO $taskDTO): bool
     {
-        // TODO: Implement delete() method.
+        try {
+            $this->db->query("
+                DELETE
+                FROM tasks
+                WHERE task_id = :id AND user_id = :user_id
+            ")->execute(array(
+                ':id' => $taskDTO->getId(),
+                ':user_id' => $taskDTO->getUserId(),
+            ));
+            return true;
+        }catch (PDOException $PDOException){
+            $err = $PDOException->getMessage();
+            //TODO LOG the errors
+            return false;
+        }
     }
 
 

@@ -7,6 +7,7 @@ use App\Models\task\TaskDTO;
 use App\Repositories\goal\GoalRepository;
 use App\Repositories\task\TaskRepository;
 use App\Repositories\task\TaskRepositoryInterface;
+use App\Services\goal\GoalService;
 use Exception;
 
 class TaskService implements TaskServiceInterface
@@ -360,7 +361,72 @@ class TaskService implements TaskServiceInterface
     /** UPDATE Task Goal ID */
     public function updateGoalId($userInputs, $userInfo)
     {
-        // TODO: Implement updateGoalId() method.
+        if (!isset($userInputs['task_id'])){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Task ID!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if ($userInputs['goal_id'] <= 0){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Goal!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        try {
+            $user_id = $userInfo['id'];
+            $task = new TaskDTO();
+            $task->setId($userInputs['task_id']);
+            $task->setGoalId($userInputs['goal_id']);
+            $task->setUserId($user_id);
+        }catch (Exception $exception){
+            $err = $exception->getMessage();
+            http_response_code(403);
+            echo json_encode(['message' => 'Error! ' . $err],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!$this->taskExist($user_id,$task)){
+            return;
+        }
+
+        try {
+            $goalRepository = new GoalRepository();
+            $goalDTO = new GoalDTO();
+            $goalDTO->setUserId($user_id);
+            $goalDTO->setId($userInputs['goal_id']);
+            $goalFromDb = $goalRepository->getGoalById($goalDTO);
+
+        }catch (Exception $exception){
+            http_response_code(403);
+            echo json_encode(['message' => 'Error! Invalid Goal'],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (null === $goalFromDb){
+            http_response_code(403);
+            echo json_encode(['message' => 'Error! Such Goal Not Exist!'],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $result = $this->taskRepository->updateGoalId($goalFromDb->getId(),$task);
+
+        if (!$result){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Request!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Successfully Changed Task Goal!'
+        ], JSON_PRETTY_PRINT);
     }
 
 
@@ -368,7 +434,52 @@ class TaskService implements TaskServiceInterface
 
     public function delete($userInputs, $userInfo)
     {
-        // TODO: Implement delete() method.
+        if (!isset($userInputs['task_id'])){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Task ID!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if ($userInputs['task_id'] <= 0){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Invalid Goal ID!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        try {
+            $task = new TaskDTO();
+            $task->setId($userInputs['task_id']);
+            $task->setUserId($userInfo['id']);
+        }catch (Exception $exception){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! ' . $exception->getMessage()
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!$this->taskExist($task->getUserId(),$task)){
+            return;
+        }
+
+        $result = $this->taskRepository->delete($task);
+
+        if (!$result) {
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Error! Can not DELETE the task!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'message' => 'Successfully DELETED Task!'
+        ], JSON_PRETTY_PRINT);
     }
 
 

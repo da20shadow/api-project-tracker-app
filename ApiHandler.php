@@ -201,7 +201,7 @@ class ApiHandler
         if (null === $userInfo){
             return;
         }
-        //TODO Next
+        $taskService->delete($userInputs,$userInfo);
     }
 
     /** --> TASK GET Single Task By ID <-- */
