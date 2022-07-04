@@ -14,6 +14,8 @@ interface TaskServiceInterface
 
     public function updatePriority($userInputs, $userInfo);
 
+    public function updateProgress($userInputs, $userInfo);
+
     public function updateDueDate($userInputs, $userInfo);
 
     public function updateGoalId($userInputs, $userInfo);

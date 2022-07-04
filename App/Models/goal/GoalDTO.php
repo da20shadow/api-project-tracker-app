@@ -29,8 +29,21 @@ class GoalDTO
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function setId(int $id): GoalDTO
     {
+        if (!is_numeric($id)){
+            throw new Exception('Invalid Goal ID');
+        }
+
+        if ($id <= 0){
+            throw new Exception('Invalid Goal ID');
+        }
+
+        $id = InputValidator::validateStringInput($id);
+
         $this->id = $id;
         return $this;
     }
@@ -109,6 +122,10 @@ class GoalDTO
         if (!is_numeric($userId))
         {
             throw new Exception('Invalid UserId!');
+        }
+
+        if ($userId <= 0){
+            throw new Exception('Invalid User ID');
         }
 
         $userId = InputValidator::validateStringInput($userId);

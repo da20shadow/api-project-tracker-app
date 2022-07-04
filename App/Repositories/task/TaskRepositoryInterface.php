@@ -11,6 +11,7 @@ interface TaskRepositoryInterface
     public function updateTitle(TaskDTO $taskDTO):bool;
     public function updateDescription(TaskDTO $taskDTO):bool;
     public function updateStatus(TaskDTO $taskDTO):bool;
+    public function updateProgress(TaskDTO $taskDTO):bool;
     public function updatePriority(TaskDTO $taskDTO):bool;
     public function updateDueDate(TaskDTO $taskDTO):bool;
     public function updateGoalId(int $newGoalId,TaskDTO $taskDTO):bool;

@@ -138,33 +138,84 @@ class ApiHandler
 
     /** ---------------- TASK Requests --------------- */
 
-    /** --> TASK POST <-- */
+    /** --> CREATE TASK POST <-- */
     public function taskPOSTRequest($userInputs,$taskService)
     {
-        //TODO Next
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
+            return;
+        }
+        $taskService->create($userInputs,$userInfo);
     }
 
-    /** --> TASK PATCH <-- */
+    /** --> UPDATE TASK PATCH <-- */
     public function taskPATCHRequest($userInputs,$taskService)
     {
-        //TODO Next
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
+            return;
+        }
+
+        if (isset($userInputs['title']))
+        {
+            //TODO Next
+        }
+        else if (isset($userInputs['description']))
+        {
+            //TODO Next
+        }
+        else if (isset($userInputs['status']))
+        {
+            //TODO Next
+        }
+        else if (isset($userInputs['progress']))
+        {
+            //TODO Next
+        }
+        else if (isset($userInputs['priority']))
+        {
+            //TODO Next
+        }
+        else if (isset($userInputs['due_date']))
+        {
+            //TODO Next
+        }
+        else if (isset($userInputs['goal_id']))
+        {
+            //TODO Next
+        }else {
+            http_response_code(403);
+            echo json_encode(['message' => 'Invalid Request!']);
+        }
     }
 
     /** --> TASK DELETE <-- */
     public function taskDELETERequest($userInputs,$taskService)
     {
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
+            return;
+        }
         //TODO Next
     }
 
     /** --> TASK GET Single Task By ID <-- */
     public function taskGETSingleTaskRequest($userInputs,$task_id,$taskService)
     {
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
+            return;
+        }
         //TODO Next
     }
 
     /** --> TASK GET All Tasks With Goal ID <-- */
     public function taskGETAllTasksRequest($userInputs,$goal_id,$taskService)
     {
+        $userInfo = $this->validateToken($userInputs);
+        if (null === $userInfo){
+            return;
+        }
         //TODO Next
     }
 

@@ -21,14 +21,10 @@ class TaskDTO
     /**
      * @throws Exception
      */
-    public static function create($title, $description, $priority, $status, $dueDate, $goalId, $userId): TaskDTO
+    public static function create($title,$goalId,$userId): TaskDTO
     {
         return (new TaskDTO())
             ->setTitle($title)
-            ->setDescription($description)
-            ->setPriority($priority)
-            ->setStatus($status)
-            ->setDueDate($dueDate)
             ->setGoalId($goalId)
             ->setUserId($userId);
     }
@@ -60,6 +56,10 @@ class TaskDTO
 
         $title = InputValidator::validateStringInput($title);
 
+        if ($title === ''){
+            throw new Exception('Title can not be empty!');
+        }
+
         $this->title = $title;
         return $this;
     }
@@ -67,14 +67,19 @@ class TaskDTO
     /**
      * @param string $description
      * * @return TaskDTO
+     * @throws Exception
      */
     public function setDescription(string $description): TaskDTO
     {
         if (!isset($description)){
-            $description = 'Task Description...';
+            throw new Exception('Error! Empty Description!');
         }
 
         $description = InputValidator::validateStringInput($description);
+
+        if ($description === ''){
+            $description = 'Task Description...';
+        }
 
         $this->description = $description;
         return $this;
@@ -88,7 +93,7 @@ class TaskDTO
     public function setProgress(int $progress): TaskDTO
     {
         if (!isset($progress)){
-            $progress = 0;
+            throw new Exception('Error! Empty Progress!');
         }
 
         if (!is_numeric($progress)){
@@ -109,11 +114,15 @@ class TaskDTO
     public function setPriority(int $priority): TaskDTO
     {
         if (!isset($priority)){
-            $priority = 5;
+            throw new Exception('Error! Empty Priority!');
         }
 
         if (!is_numeric($priority)){
-            throw new Exception('Invalid Priority!');
+            throw new Exception('Invalid Priority Not int!');
+        }
+
+        if ($priority < 1 || $priority > 5){
+            throw new Exception('Invalid Priority! ' . $priority);
         }
 
         $priority = InputValidator::validateStringInput($priority);
@@ -130,10 +139,14 @@ class TaskDTO
     public function setStatus(int $status): TaskDTO
     {
         if (!isset($status)){
-            $status = 3;
+            throw new Exception('Error! Empty Status!');
         }
 
         if (!is_numeric($status)){
+            throw new Exception('Invalid Status!');
+        }
+
+        if ($status < 1 || $status > 4){
             throw new Exception('Invalid Status!');
         }
 
@@ -222,6 +235,9 @@ class TaskDTO
      */
     public function getId(): int
     {
+        if (!isset($this->id)){
+            return false;
+        }
         return $this->id;
     }
 
@@ -230,6 +246,9 @@ class TaskDTO
      */
     public function getTitle(): string
     {
+        if (!isset($this->title)){
+            return false;
+        }
         return $this->title;
     }
 
@@ -238,6 +257,9 @@ class TaskDTO
      */
     public function getDescription(): string
     {
+        if (!isset($this->description)){
+            return false;
+        }
         return $this->description;
     }
 
@@ -246,6 +268,9 @@ class TaskDTO
      */
     public function getProgress(): int
     {
+        if (!isset($this->progress)){
+            return false;
+        }
         return $this->progress;
     }
 
@@ -254,6 +279,9 @@ class TaskDTO
      */
     public function getPriority(): int
     {
+        if (!isset($this->priority)){
+            return false;
+        }
         return $this->priority;
     }
 
@@ -262,6 +290,9 @@ class TaskDTO
      */
     public function getStatus(): int
     {
+        if (!isset($this->status)){
+            return false;
+        }
         return $this->status;
     }
 
@@ -270,6 +301,9 @@ class TaskDTO
      */
     public function getDueDate(): mixed
     {
+        if (!isset($this->dueDate)){
+            return false;
+        }
         return $this->dueDate;
     }
 
@@ -278,6 +312,9 @@ class TaskDTO
      */
     public function getCreatedOn(): mixed
     {
+        if (!isset($this->createdOn)){
+            return false;
+        }
         return $this->createdOn;
     }
 
@@ -286,6 +323,9 @@ class TaskDTO
      */
     public function getGoalId(): int
     {
+        if (!isset($this->goalId)){
+            return false;
+        }
         return $this->goalId;
     }
 
@@ -294,6 +334,9 @@ class TaskDTO
      */
     public function getUserId(): int
     {
+        if (!isset($this->userId)){
+            return false;
+        }
         return $this->userId;
     }
 
