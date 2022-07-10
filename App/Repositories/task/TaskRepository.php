@@ -274,4 +274,33 @@ class TaskRepository implements TaskRepositoryInterface
         }
         return $tasksGenerator;
     }
+
+    public function getTasksByUserId($user_id): ?Generator
+    {
+
+        $tasksGenerator = null;
+        try {
+            $tasksGenerator = $this->db->query("
+                SELECT task_id AS id,
+                   task_title AS title,
+                   task_description AS description,
+                   priority,
+                   progress,
+                   status, 
+                   due_date AS dueDate, 
+                   created_on AS createdOn,
+                   goal_id AS goalId, 
+                   user_id AS userId
+                   FROM tasks
+                WHERE user_id = :user_id 
+            ")->execute(array(
+                'user_id' => $user_id
+            ))->fetch(TaskDTO::class);
+        }catch (PDOException $PDOException) {
+            $err = $PDOException->getMessage();
+            //TODO log the errors
+        }
+        return $tasksGenerator;
+
+    }
 }

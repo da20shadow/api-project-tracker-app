@@ -548,6 +548,30 @@ class TaskService implements TaskServiceInterface
         echo json_encode(['tasks' => $tasks],JSON_PRETTY_PRINT);
     }
 
+    /** GET All Tasks By User ID */
+    public function getTasksByUserId($user_id){
+        $tasksGenerator = $this->taskRepository->getTasksByUserId($user_id);
+
+        if (null === $tasksGenerator)
+        {
+            http_response_code(403);
+            echo json_encode(['message' => 'No Tasks Added Yet!'],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $tasks = $this->generateTasksList($tasksGenerator);
+
+        if (count($tasks) === 0)
+        {
+            http_response_code(403);
+            echo json_encode(['message' => 'No Tasks Added Yet!'],JSON_PRETTY_PRINT);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode(['tasks' => $tasks],JSON_PRETTY_PRINT);
+    }
+
     /** ---------------VALIDATORS AND GENERATORS--------------- */
 
     private function generateTasksList($tasksGenerator): array
