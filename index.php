@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 $url = str_replace('api-goals-app/', '', $_SERVER['REQUEST_URI']);
+$headers = getallheaders();
 $inputData = json_decode(file_get_contents('php://input'), true);
 $apiHandler = new ApiHandler();
 
@@ -65,28 +66,38 @@ if (preg_match("/^\/users[\/]?$/", $url))
 // api url -> /goals/
 else if (preg_match("/^\/goals[\/]?$/", $url))
 {
+    if (!isset($headers['Authorization'])){
+        http_response_code(400);
+        echo json_encode(['message' => 'Invalid Access Token!'],JSON_PRETTY_PRINT);
+        return;
+    }
+    $token = $headers['Authorization'];
     $goalService = new GoalService();
 
     /** CREATE Goal POST
-     * @expected: (token,title,description,due_date,user_id)!
+     * @expected: (token,[title,description,due_date])!
      */
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $inputData)
     {
-        $apiHandler->processGoalPOSTRequest($inputData,$goalService);
+        $apiHandler->processGoalPOSTRequest($token,$inputData,$goalService);
     }
     /** UPDATE Goal PATCH
-     * @expected: (token, user_id, title OR description OR due_date OR Category)!
+     * @expected: (token, [title OR description OR due_date OR category])!
      */
     elseif ($_SERVER['REQUEST_METHOD'] === 'PATCH' && $inputData)
     {
-        $apiHandler->processGoalPATCHRequest($inputData,$goalService);
+        $apiHandler->processGoalPATCHRequest($token,$inputData,$goalService);
     }
     /** DELETE Goal
      * @expected: (token, goal_id, user_id)!
      */
-    elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && $inputData)
+    elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE')
     {
-        $apiHandler->processGoalDELETERequest($inputData,$goalService);
+        $apiHandler->processGoalDELETERequest($token,$goalService);
+    }
+    /** GET ALL GOALS By User ID @expected: (token) */
+    elseif ($_SERVER['REQUEST_METHOD'] === 'GET'){
+        $apiHandler->processGETAllGoalsRequest($token, $goalService);
     }
 
 }
@@ -96,36 +107,23 @@ else if (preg_match("/^\/goals[\/]?$/", $url))
 // api url -> /goals/1
 else if (preg_match("/^\/goals\/\d+$/", $url))
 {
+    if (!isset($headers['Authorization'])){
+        http_response_code(400);
+        echo json_encode(['message' => 'Invalid Access Token!'],JSON_PRETTY_PRINT);
+        return;
+    }
+    $token = $headers['Authorization'];
     $goal_id = str_replace('/goals/','',$url);
     $goalService = new GoalService();
 
-    /** GET Goal By ID POST
+    /** GET Goal By ID
      * @expect (token)
      */
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $inputData)
+    if ($_SERVER['REQUEST_METHOD'] === 'GET')
     {
-        $apiHandler->processGETSingleGoalRequest($inputData, $goal_id,$goalService);
+        $apiHandler->processGETSingleGoalRequest($token, $goal_id,$goalService);
     }
 }
-/** GET ALL Goals By User ID
- * @returns {goals => [{id,title,description,category,userId,createdOn,dueDate},{id....}}
- */
-// api url -> /goals/user/7
-else if (preg_match("/^\/goals\/user\/\d+$/", $url))
-{
-    $user_id = str_replace('/goals/user/','',$url);
-    $goalService = new GoalService();
-
-    /** GET Goal By ID POST
-     * @expect (token)
-     */
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $inputData)
-    {
-        $apiHandler->processGETAllGoalsRequest($inputData, $user_id, $goalService);
-    }
-
-}
-
 
 /** ---------------- TASK API Requests ------------- */
 
@@ -135,27 +133,31 @@ else if (preg_match("/^\/goals\/user\/\d+$/", $url))
 //api url -> /tasks/
 else if (preg_match("/^\/tasks[\/]?$/",$url))
 {
+    //TODO: add the token from the $headers variable same as the goals
+    if (!isset($headers['Authorization'])){
+        http_response_code(400);
+        echo json_encode(['message' => 'Invalid Access Token!'],JSON_PRETTY_PRINT);
+        return;
+    }
+    $token = $headers['Authorization'];
     $taskService = new TaskService();
     /** CREATE New Task POST
-     * @expected: [token,title,goal_id AND IF description,due_date,priority,status OK]!
+     * @expected: (token) and [title,goal_id AND IF description,due_date,priority,status OK]!
      */
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $inputData)
     {
-        $apiHandler->taskPOSTRequest($inputData,$taskService);
+        $apiHandler->taskPOSTRequest($token,$inputData,$taskService);
     }
     /** UPDATE Task PATCH
      * @expected: [token,task_id title OR description OR due_date OR progress OR priority OR status OR goal_id]!
      */
     else if ($_SERVER['REQUEST_METHOD'] === 'PATCH' && $inputData)
     {
-        $apiHandler->taskPATCHRequest($inputData,$taskService);
+        $apiHandler->taskPATCHRequest($token,$inputData,$taskService);
     }
-    /** DELETE Task
-     * @expected: [token,task_id]!
-     */
-    else if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && $inputData)
-    {
-        $apiHandler->taskDELETERequest($inputData,$taskService);
+    else if ($_SERVER['REQUEST_METHOD'] === 'GET'){
+
+        $apiHandler->taskGETAllTasksRequestByUserId($token,$taskService);
     }
 }
 //api url -> /tasks/1
@@ -172,6 +174,19 @@ else if (preg_match("/^\/tasks\/\d+$/",$url))
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $inputData)
     {
         $apiHandler->taskGETSingleTaskRequest($inputData,$task_id,$taskService);
+    }
+    /** DELETE Task
+     * @expected: [token,task_id]!
+     */
+    else if ($_SERVER['REQUEST_METHOD'] === 'DELETE')
+    {
+        if (!isset($headers['Authorization'])){
+            http_response_code(400);
+            echo json_encode(['message' => 'Invalid Access Token!'],JSON_PRETTY_PRINT);
+            return;
+        }
+        $token = $headers['Authorization'];
+        $apiHandler->taskDELETERequest($token,$task_id,$taskService);
     }
 }
 //api url -> /tasks/goal/1
@@ -191,6 +206,22 @@ else if (preg_match("/^\/tasks\/goal\/\d+$/",$url))
     }
 }
 
+//api url -> /tasks/user/1
+/** GET ALL Tasks By User ID
+ * @returns {tasks: [{id,title,description,due_date,created_on,priority,status,goal_id,user_id},{id,title...}]}
+ */
+else if (preg_match("/^\/tasks\/user\/\d+$/",$url))
+{
+    $taskService = new TaskService();
+    $user_id = str_replace('/tasks/user/','',$url);
+    /** GET ALL Task By GOAL ID
+     * @expected: [token]!
+     */
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $inputData)
+    {
+        $apiHandler->taskGETAllTasksRequestByUserId($inputData,$user_id,$taskService);
+    }
+}
 
 /** ---------------- SUBTASK API Requests ------------- */
 
@@ -198,5 +229,6 @@ else if (preg_match("/^\/tasks\/goal\/\d+$/",$url))
 /** ---------------- IDEA API Requests ------------- */
 
 else{
-    echo json_encode(['message' => 'Invalid API Request!']);
+    http_response_code(404);
+    echo json_encode(['message' => 'Error! Invalid API Request!']);
 }

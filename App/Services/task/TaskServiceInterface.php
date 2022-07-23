@@ -20,7 +20,7 @@ interface TaskServiceInterface
 
     public function updateGoalId($userInputs, $userInfo);
 
-    public function delete($userInputs, $userInfo);
+    public function delete($task_id, $userInfo);
 
     public function getTaskById($user_id, $task_id);
 

@@ -7,7 +7,7 @@ use Generator;
 
 interface TaskRepositoryInterface
 {
-    public function insert(TaskDTO $taskDTO):bool;
+    public function insert(TaskDTO $taskDTO):bool|TaskDTO;
     public function updateTitle(TaskDTO $taskDTO):bool;
     public function updateDescription(TaskDTO $taskDTO):bool;
     public function updateStatus(TaskDTO $taskDTO):bool;

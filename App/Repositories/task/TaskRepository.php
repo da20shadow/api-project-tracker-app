@@ -19,7 +19,7 @@ class TaskRepository implements TaskRepositoryInterface
 
     /** -----------------CREATE-------------------- */
 
-    public function insert(TaskDTO $taskDTO): bool
+    public function insert(TaskDTO $taskDTO): bool|TaskDTO
     {
         $description = $taskDTO->getDescription() ?: 'Task Description...';
         $dueDate = $taskDTO->getDueDate() ?: '0000-00-00';
@@ -30,7 +30,7 @@ class TaskRepository implements TaskRepositoryInterface
             $this->db->query("
             INSERT INTO tasks 
             (task_title, task_description, due_date, status,priority, goal_id, user_id)
-            VALUES (:title,:description,:due_date,:status,:priority,:goal_id, :user_id)
+            VALUES (:title,:description,:due_date,:status,:priority,:goal_id, :user_id);
         ")->execute(array(
                 ':title' => $taskDTO->getTitle(),
                 ':description' => $description,
@@ -40,12 +40,31 @@ class TaskRepository implements TaskRepositoryInterface
                 ':goal_id' => $taskDTO->getGoalId(),
                 ':user_id' => $taskDTO->getUserId(),
             ));
-            return true;
+            $result = $this->db->query("
+                SELECT task_id as id,
+                       task_title AS title,
+                   task_description AS description,
+                   priority,
+                   progress,
+                   status, 
+                   due_date AS dueDate, 
+                   created_on AS createdOn,
+                   goal_id AS goalId, 
+                   user_id AS userId
+                FROM tasks
+                WHERE task_id = LAST_INSERT_ID() AND user_id = :user_id;
+            ")->execute(array(":user_id" => $taskDTO->getUserId()))
+                ->fetch(TaskDTO::class)->current();
+
         } catch (PDOException $PDOException) {
             $pdoError = $PDOException->getMessage();
             //TODO: Log the errors
-            return false;
+            $result = false;
         }
+        if ($result instanceof TaskDTO){
+            return $result;
+        }
+        throw new \Exception($result);
     }
 
 

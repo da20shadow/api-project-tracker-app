@@ -26,7 +26,7 @@ class TaskService implements TaskServiceInterface
         if (!isset($userInputs['title']) || !isset($userInputs['goal_id'])) {
             http_response_code(403);
             echo json_encode([
-                'message' => 'Task title can not be empty!'
+                'message' => 'Task title or goal ID can not be empty!'
             ], JSON_PRETTY_PRINT);
             return;
         }
@@ -74,19 +74,34 @@ class TaskService implements TaskServiceInterface
             return;
         }
 
-        $result = $this->taskRepository->insert($task);
+        try {
+            $result = $this->taskRepository->insert($task);
+        }catch (Exception $exception){
+            $result = $exception->getMessage();
+        }
 
-        if (!$result) {
+        if (!$result instanceof TaskDTO) {
             http_response_code(403);
             echo json_encode([
-                'message' => 'All fields are required!'
+                'message' => 'An Error Occur! Please, try again or contact our support!',
+                'Error' => $result
             ], JSON_PRETTY_PRINT);
             return;
         }
 
         http_response_code(200);
         echo json_encode([
-            'message' => 'Successfully Created New Task!'
+            'message' => 'Successfully Created New Task!',
+            'task' => ['id'=> $result->getId(),
+                'title' => $result->getTitle(),
+                'description' => $result->getDescription(),
+                'priority' => $result->getPriority(),
+                'progress' => $result->getProgress(),
+                'status' => $result->getStatus(),
+                'dueDate' => $result->getDueDate(),
+                'createdOn' => $result->getCreatedOn(),
+                'userId' => $result->getUserId(),
+                'goalId' => $result->getGoalId(),]
         ], JSON_PRETTY_PRINT);
     }
 
@@ -99,7 +114,7 @@ class TaskService implements TaskServiceInterface
         if (!isset($userInputs['task_id'])) {
             http_response_code(403);
             echo json_encode([
-                'message' => 'Error! Invalid Request!'
+                'message' => 'Error! Missing Task ID!'
             ], JSON_PRETTY_PRINT);
             return;
         }
@@ -431,17 +446,10 @@ class TaskService implements TaskServiceInterface
 
     /** ------------------DELETE-------------------- */
 
-    public function delete($userInputs, $userInfo)
+    public function delete($task_id, $userInfo)
     {
-        if (!isset($userInputs['task_id'])) {
-            http_response_code(403);
-            echo json_encode([
-                'message' => 'Error! Invalid Task ID!'
-            ], JSON_PRETTY_PRINT);
-            return;
-        }
 
-        if ($userInputs['task_id'] <= 0) {
+        if ($task_id <= 0) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'Error! Invalid Goal ID!'
@@ -451,7 +459,7 @@ class TaskService implements TaskServiceInterface
 
         try {
             $task = new TaskDTO();
-            $task->setId($userInputs['task_id']);
+            $task->setId($task_id);
             $task->setUserId($userInfo['id']);
         } catch (Exception $exception) {
             http_response_code(403);

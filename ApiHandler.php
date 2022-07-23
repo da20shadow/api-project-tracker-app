@@ -9,7 +9,7 @@ class ApiHandler
     /** ---------------- USER Requests --------------- */
 
     /** --> USER POST <-- */
-    public function processUserPOSTRequest($userInputs, UserService $userService)
+    public function processUserPOSTRequest($userInputs,UserService $userService)
     {
         /** LOGIN User */
         if (count($userInputs) == 2) {
@@ -57,19 +57,20 @@ class ApiHandler
     /** ---------------- GOAL Requests --------------- */
 
     /** --> GOAL POST <-- */
-    function processGoalPOSTRequest($userInputs, $goalService)
+    function processGoalPOSTRequest($token,$userInputs,$goalService)
     {
-        $userInfo = $this->validateToken($userInputs);
+        $userInfo = $this->validateToken($token);
         if (null === $userInfo){
             return;
         }
-        $goalService->create($userInputs, $userInfo);
+        $user_id = $userInfo['id'];
+        $goalService->create($userInputs, $user_id);
     }
 
     /** --> GOAL PATCH <--- */
-    function processGoalPATCHRequest($userInputs, $goalService)
+    function processGoalPATCHRequest($token, $userInputs, $goalService)
     {
-        $userInfo = $this->validateToken($userInputs);
+        $userInfo = $this->validateToken($token);
         if (null === $userInfo){
             return;
         }
@@ -109,37 +110,37 @@ class ApiHandler
     }
 
     /** --> GOAL GET Single Goal <-- */
-    function processGETSingleGoalRequest($userInputs, $goal_id,$goalService)
+    function processGETSingleGoalRequest($token, $goal_id,$goalService)
     {
-        $userInfo = $this->validateToken($userInputs);
+        $userInfo = $this->validateToken($token);
         if (null === $userInfo){
             return;
         }
         $goalService->getGoalById($userInfo['id'],$goal_id);
     }
-    /** --> GOAL GET Single Goal <-- */
-    public function processGETAllGoalsRequest($userInputs, $user_id, $goalService)
+    /** --> GOAL GET ALL Goals <-- */
+    public function processGETAllGoalsRequest($token, $goalService)
     {
-        $userInfo = $this->validateToken($userInputs);
+        $userInfo = $this->validateToken($token);
         if (null === $userInfo){
             return;
         }
-        if ($user_id != $userInfo['id']){
+        if (!isset($userInfo['id'])){
             http_response_code(403);
             echo json_encode(['message' => 'Invalid Request!']);
             return;
         }
 
-        $goalService->getGoalsByUserId($user_id);
+        $goalService->getGoalsByUserId($userInfo['id']);
     }
 
 
     /** ---------------- TASK Requests --------------- */
 
     /** --> CREATE TASK POST <-- */
-    public function taskPOSTRequest($userInputs,$taskService)
+    public function taskPOSTRequest($token,$userInputs,$taskService)
     {
-        $userInfo = $this->validateToken($userInputs);
+        $userInfo = $this->validateToken($token);
         if (null === $userInfo){
             return;
         }
@@ -147,9 +148,9 @@ class ApiHandler
     }
 
     /** --> UPDATE TASK PATCH <-- */
-    public function taskPATCHRequest($userInputs,$taskService)
+    public function taskPATCHRequest($token,$userInputs,$taskService)
     {
-        $userInfo = $this->validateToken($userInputs);
+        $userInfo = $this->validateToken($token);
         if (null === $userInfo){
             return;
         }
@@ -188,18 +189,14 @@ class ApiHandler
     }
 
     /** --> TASK DELETE <-- */
-    public function taskDELETERequest($userInputs,$taskService)
+    public function taskDELETERequest($token,$task_id,$taskService)
     {
-        $userInfo = $this->validateToken($userInputs);
+        $userInfo = $this->validateToken($token);
         if (null === $userInfo){
             return;
         }
 
-        $userInfo = $this->validateToken($userInputs);
-        if (null === $userInfo){
-            return;
-        }
-        $taskService->delete($userInputs,$userInfo);
+        $taskService->delete($task_id,$userInfo);
     }
 
     /** --> TASK GET Single Task By ID <-- */
@@ -220,6 +217,17 @@ class ApiHandler
             return;
         }
         $taskService->getTasksByGoalId($userInfo['id'],$goal_id);
+    }
+
+    /** --> TASK GET All Tasks With User ID <-- */
+    public function taskGETAllTasksRequestByUserId($token,$taskService)
+    {
+        $userInfo = $this->validateToken($token);
+        if (null === $userInfo){
+            return;
+        }
+
+        $taskService->getTasksByUserId($userInfo['id']);
     }
 
 
@@ -245,18 +253,17 @@ class ApiHandler
     /** -- IDEA GET <-- */
 
     /** --------------TOKEN VALIDATION-------------- */
-    private function validateToken($userInputs): ?array
+    private function validateToken($token): ?array
     {
-        if (!isset($userInputs['token'])) {
+        if (!isset($token)) {
             http_response_code(403);
             echo json_encode(['message' => 'Invalid Token!'], JSON_PRETTY_PRINT);
             return null;
         }
 
-        $accessToken = $userInputs['token'];
         $userInfo = null;
         try {
-            $userInfo = AuthValidator::verifyToken($accessToken);
+            $userInfo = AuthValidator::verifyToken($token);
         } catch (Exception $e) {
             //TODO: log the error
             $error = $e->getMessage();

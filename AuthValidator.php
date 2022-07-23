@@ -16,7 +16,7 @@ class AuthValidator
     public static function createToken(UserDTO $userDTO): array
     {
         $iat = time();
-        $exp = $iat + 60 * 2; // Expiration 1 hour
+        $exp = $iat + 60 * 60; // Expiration 1 hour
         $payload = [
             'iss' => 'http://localhost:8090/api-goals-app/', //API
             'aud' => 'http://localhost:3000/', //Front End
@@ -66,7 +66,7 @@ class AuthValidator
             throw new Exception('Invalid Token!');
         }
         return [
-            'user_id' => $decodedToken->id,
+            'id' => $decodedToken->id,
             'username' => $decodedToken->username,
             'email' => $decodedToken->email,
             'role' => $decodedToken->role,

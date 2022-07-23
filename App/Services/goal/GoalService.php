@@ -17,11 +17,10 @@ class GoalService implements GoalServiceInterface
     }
 
     /** ----------------CREATE-------------------- */
-    public function create(array $userInputs, array $userInfo)
+    public function create(array $userInputs, $user_id)
     {
         if (!isset($userInputs['title']) || !isset($userInputs['description'])
-            || !isset($userInputs['category']) || !isset($userInputs['user_id'])
-            || !isset($userInputs['due_date']) || $userInputs['user_id'] != $userInfo['id']) {
+            || !isset($userInputs['category']) || !isset($userInputs['due_date'])) {
             http_response_code(403);
             echo json_encode([
                 'message' => 'All fields are required!'
@@ -32,12 +31,35 @@ class GoalService implements GoalServiceInterface
         $title = $userInputs['title'];
         $description = $userInputs['description'];
         $category = $userInputs['category'];
-        $userId = $userInputs['user_id'];
         $dueDate = $userInputs['due_date'];
 
-        $goal = null;
+        if (!is_string($title)){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Invalid Title Input!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!is_string($description)){
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Invalid Description Input!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!is_numeric($category)) {
+            http_response_code(403);
+            echo json_encode([
+                'message' => 'Invalid Category Input!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+        //TODO: validate dueDate input
+
         try {
-            $goal = GoalDTO::create($title, $description, $category, $userId, $dueDate);
+            $goal = GoalDTO::create($title, $description, $category, $user_id, $dueDate);
         } catch (Exception $e) {
             echo json_encode($e->getMessage(), JSON_PRETTY_PRINT);
             return;
@@ -48,7 +70,7 @@ class GoalService implements GoalServiceInterface
         if (!$result) {
             http_response_code(403);
             echo json_encode([
-                'message' => 'All fields are required!'
+                'message' => 'Error, can not add the goal, please try again or contact our support!'
             ], JSON_PRETTY_PRINT);
             return;
         }
@@ -67,7 +89,7 @@ class GoalService implements GoalServiceInterface
         if (!isset($userInputs['goal_id'])){
             http_response_code(403);
             echo json_encode([
-                'message' => 'Error! Invalid Request!'
+                'message' => 'Error! Empty Goal ID!'
             ], JSON_PRETTY_PRINT);
             return;
         }
@@ -122,7 +144,7 @@ class GoalService implements GoalServiceInterface
         try {
             $goal->setDescription($userInputs['description']);
             $goal->setId($userInputs['goal_id']);
-            $goal->setUserId($userInputs['user_id']);
+            $goal->setUserId($userInfo['id']);
         } catch (Exception $exception) {
             http_response_code(403);
             echo json_encode([
@@ -205,12 +227,21 @@ class GoalService implements GoalServiceInterface
             return;
         }
 
+        $category = $userInputs['category'];
+        if (!is_numeric($category)){
+            http_response_code(400);
+            echo json_encode([
+                'message' => 'Error! Invalid Category ID!'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
         $goal = new GoalDTO();
 
         try {
             $goal->setCategory($userInputs['category']);
             $goal->setId($userInputs['goal_id']);
-            $goal->setUserId($userInputs['user_id']);
+            $goal->setUserId($userInfo['id']);
         } catch (Exception $exception) {
             http_response_code(403);
             echo json_encode([

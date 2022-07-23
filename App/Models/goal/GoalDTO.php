@@ -98,7 +98,7 @@ class GoalDTO
             throw new Exception('Category can not be empty!');
         }
 
-        if (!is_numeric($category))
+        if ($category <= 0 || $category > 3)
         {
             throw new Exception('Invalid Category!');
         }
