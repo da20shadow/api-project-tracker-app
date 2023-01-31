@@ -1,2 +1,2 @@
-# api-goals-app
-Goals App API
+# api-project-tracker-app
+Project App API
